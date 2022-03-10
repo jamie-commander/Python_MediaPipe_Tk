@@ -32,6 +32,7 @@ class MainApplication(tk.Tk):
         self.hand_value = True
         self.pose_value = True
         self.s = None
+        self.plank_status = False #平板支撐的狀態
         self.captrue_init()
         self.mediapipe_init()
         self.TK_main()
@@ -147,7 +148,7 @@ class MainApplication(tk.Tk):
         
         self.hand_result = self.myhands.process(self.imgRGB)
         if self.hand_result.multi_hand_landmarks:
-            print(len(self.hand_result.multi_hand_landmarks))
+            #print(len(self.hand_result.multi_hand_landmarks))
             for handLms in self.hand_result.multi_hand_landmarks:#兩隻手所以多一層迴圈
                 self.mpDraw.draw_landmarks(self.img,
                                       handLms,#點
@@ -199,6 +200,7 @@ class MainApplication(tk.Tk):
                             (0,0,255),#顏色
                             2,#租度
                             )
+                
                 '''if (i == 11 or i == 12 or i == 13 or i == 14 or i == 15 or i == 16):
                     cv2.circle(self.img,
                                (xPos,yPos),#中心位置
@@ -258,11 +260,15 @@ class MainApplication(tk.Tk):
         self.button_pose_text = tk.StringVar()
         self.button_pose_text.set('關閉Pose處裡')
         self.button_pose = tk.Button(self.frame2,textvariable = self.button_pose_text,bd=5,height=2,width=22,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
+        self.label_plank_text = tk.StringVar()
+        self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
+        self.label_plank = tk.Button(self.frame2,textvariable = self.label_plank_text,bd=5,height=2,width=22,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
         #frame2物件布局
         self.button_open.grid(row=0, column=0, padx=0, pady=0)
         self.button_close.grid(row=0, column=1, padx=0, pady=0)
         self.button_hand.grid(row=0, column=2, padx=0, pady=0)
         self.button_pose.grid(row=0, column=3, padx=0, pady=0)
+        self.label_plank.grid(row=1, column=0, padx=0, pady=0)
         return
     def TK_updata(self):
         while True:
