@@ -9,6 +9,10 @@ from PIL import  ImageTk, Image, ImageDraw
 import cv2
 from threading import Timer
 import mediapipe as mp
+from CalcFunction import calc_on_line
+
+from torch import threshold
+
 def mkdir():
     filepath = os.getcwd()#取得本地位置
     #if os.path.isdir(os.path.join(filepath,"resource")):
@@ -19,6 +23,9 @@ def mkdir():
             flag = False
     if(flag):
         os.mkdir("resource")
+
+
+
 class MainApplication(tk.Tk):
     def __init__(self):
         super().__init__()
@@ -200,7 +207,6 @@ class MainApplication(tk.Tk):
                             (0,0,255),#顏色
                             2,#租度
                             )
-                
                 '''if (i == 11 or i == 12 or i == 13 or i == 14 or i == 15 or i == 16):
                     cv2.circle(self.img,
                                (xPos,yPos),#中心位置
@@ -210,8 +216,23 @@ class MainApplication(tk.Tk):
                                )'''
                 #print(i, xPos, yPos,zPos)
                 #print("i:{} x:{} y:{} z:{}".format(i,xPos,yPos,zPos))
-        
+            self.detect_plank(self.pose_result.pose_landmarks.landmark)
         return
+    
+    def detect_plank(self, lms): #偵測是否有平板支撐的動作
+        # 12 -> right shoulder
+        # 24 -> right hip
+        # 28 -> right ankle
+        x = lms[24].x
+        y = lms[24].y
+        x1 = lms[12].x
+        y1 = lms[12].y
+        x2 = lms[28].x
+        y2 = lms[28].y
+        self.plank_status = calc_on_line(x, y, x1, y1, x2, y2)
+        self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
+        
+    
     def hand_on_off(self):
         if(self.hand_value):
             self.button_hand_text.set("開啟Hand處裡")
@@ -262,7 +283,7 @@ class MainApplication(tk.Tk):
         self.button_pose = tk.Button(self.frame2,textvariable = self.button_pose_text,bd=5,height=2,width=22,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
         self.label_plank_text = tk.StringVar()
         self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
-        self.label_plank = tk.Button(self.frame2,textvariable = self.label_plank_text,bd=5,height=2,width=22,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
+        self.label_plank = tk.Label(self.frame2,textvariable = self.label_plank_text,bd=5,height=2,width=22,bg ='gray94',font=('微軟正黑體',16,'bold'))
         #frame2物件布局
         self.button_open.grid(row=0, column=0, padx=0, pady=0)
         self.button_close.grid(row=0, column=1, padx=0, pady=0)
