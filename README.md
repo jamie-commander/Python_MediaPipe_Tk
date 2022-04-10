@@ -7,6 +7,7 @@ Tk介面與MediaPipe
         Calc -- 準備就緒 --> Analysis[系統開始偵測使用者動作]
         Analysis -- 完成復健項目 --> feature[系統進行評分]
         feature -- 評分完成 --> backtrader[顯示評分結果]
-        backtrader -- 存檔 --> result[結束]
-        backtrader -- G --> Calc
+        backtrader --> save[存檔]
+        save -- 繼續操作 --> Calc
+        save --> result[結束]
 ```
