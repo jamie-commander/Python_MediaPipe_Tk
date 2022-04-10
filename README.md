@@ -16,7 +16,7 @@ Tk介面與MediaPipe
         Big_Data_Catch[撰寫操作介面程式] -- 完成介面程式撰寫 --> Calc[選定復健項目並撰寫辨識復健動作程式]
         Calc -- 正確辨識復健動作 --> Analysis[評分復健動作]
         Calc -- 未正確辨識復健動作 --> Calc
-        Analysis -- 未正確辨識復健動作 --> Analysis
+        Analysis -- 未正確評分復健動作 --> Analysis
         Analysis -- 正確評分復健動作 --> feature[撰寫小遊戲]
         feature -- 完成小遊戲撰寫 --> backtrader[加入語音辨識系統]
         backtrader --> save[完成]
