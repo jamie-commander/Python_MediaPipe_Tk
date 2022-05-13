@@ -38,6 +38,7 @@ class MainApplication(tk.Tk):
         self.pose_value = True
         self.s = None
         self.plank_status = False #平板支撐的狀態
+        self.out = None
         self.captrue_init()
         self.mediapipe_init()
         self.TK_main()
@@ -50,10 +51,10 @@ class MainApplication(tk.Tk):
         screenwidth = self.winfo_screenwidth()#取得作業系統視窗寬度
         screenheight = self.winfo_screenheight()#取得作業系統視窗高度
         #size = '%dx%d+%d+%d' % (screenwidth * 0.9, screenheight * 0.9, (screenwidth * (1 - 0.9) )/2, (screenheight * (1 - 0.9))/3)
-        size = '%dx%d+%d+%d' % (1920, 900, (screenwidth-1920)/2, (screenheight-900)/2)
+        size = '%dx%d+%d+%d' % (1280, 900, (screenwidth-1280)/2, (screenheight-900)/2)
         self.geometry(size)#TK視窗大小
-        self.maxsize(1920, 900)#TK視窗最大大小
-        self.minsize(1920, 900)#TK視窗最小大小
+        self.maxsize(1280, 900)#TK視窗最大大小
+        self.minsize(1280, 900)#TK視窗最小大小
         #--------------------------------------------------
         #------------------觸發刷新函式-------------------
         #Updata_Start=Timer(0.5,self.TK_updata,[])#thread
@@ -84,20 +85,39 @@ class MainApplication(tk.Tk):
         return
     def captrue_open(self):
         self.button_open["state"] = tk.DISABLED
-        ret,self.img = self.captrue.read() #取得相機畫面
-        self.img = cv2.flip(self.img, 1) # 
+        #【Opencv学习（一）】VideoCapture读数据内存泄漏
+        #https://blog.csdn.net/liuhuicsu/article/details/62418054
+        self.ret,self.img = self.captrue.read() #取得相機畫面
         #cv2.imwrite(self.img_viode,img)
-        if(ret):
-            cv2.imwrite(self.img_video,self.img) #儲存最原始圖片
+        if(self.ret):
             
-            self.imgRGB = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)#轉RGB
+            self.img = cv2.flip(self.img, 1) #
+            
+            #cv2.imwrite(self.img_video,self.img) #儲存最原始圖片
+            
+            #self.imgRGB = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
+            
+            #------------在tk第一個畫面上秀出原始圖片---------------------
+            #https://blog.csdn.net/weixin_39450145/article/details/103874310
+            #Image.fromarray的作用：简而言之，就是实现array到image的转换
+            #ImageTk.PhotoImage
+            #https://stackoverflow.com/questions/28670461/read-an-image-with-opencv-and-display-it-with-tkinter
+            
+            self.img_original = Image.fromarray(self.img)
+            self.img_original = ImageTk.PhotoImage(image = self.img_original)
+            self.video1.config(image=self.img_original)
+            
+            # convert color BGR to RGB
+            self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)#轉RGB
+            self.img.flags.writeable = False
+            
             
             #取得圖片高度寬度
             self.imgHeight = self.img.shape[0]
             self.imgWidth = self.img.shape[1]
             #---------------mediapipe_hand處裡--------------------
-            if(self.hand_value):
-                self.mediapipe_hand() #每個點的x、y、z資訊都在 self.hand_result
+            '''if(self.hand_value):
+                self.mediapipe_hand() #每個點的x、y、z資訊都在 self.hand_result'''
             #---------------mediapipe_hand處裡--------------------
             if(self.pose_value):
                 self.mediapipe_pose() #每個點的x、y、z資訊都在 self.pose_result處裡的資料
@@ -111,16 +131,29 @@ class MainApplication(tk.Tk):
                         1,
                         (255,0,0),
                         3)
-            cv2.imwrite(self.img_video_process,self.img)#儲存處裡後圖片
+            #--------------處裡完成轉回RGB----------
+            # convert color RGB to BGR
+            self.img.flags.writeable = True
+            self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)
+            
+            #------------在tk第一個畫面上秀出處理圖片---------------------
+            self.img_process = Image.fromarray(self.img)
+            self.img_process = ImageTk.PhotoImage(image = self.img_process)
+            self.video2.config(image=self.img_process)
+            
+            #cv2.imwrite(self.img_video_process,self.img)#儲存處裡後圖片
             #cv2.imshow('img',self.img)
-        self.img_original = ImageTk.PhotoImage(Image.open(self.img_video)) #讀取圖片
-        self.video1.imgtk=self.img_original #換圖片
+        
+        #---------------------更新圖片方法，這方法不太好一直讀寫圖片-----------------------------
+        '''self.img_original = ImageTk.PhotoImage(Image.open(self.img_video)) #讀取圖片
+        #self.video1.imgtk=self.img_original #換圖片
         self.video1.config(image=self.img_original) #換圖片
 
         self.img_process = ImageTk.PhotoImage(Image.open(self.img_video_process)) #讀取圖片
-        self.video2.imgtk=self.img_process #換圖片
-        self.video2.config(image=self.img_process) #換圖片
-
+        #self.video2.imgtk=self.img_process #換圖片
+        self.video2.config(image=self.img_process) #換圖片'''
+        #------------------------------------------------------------
+        
         #self.img_original = ImageTk.PhotoImage(Image.open(self.img_video)) #讀取圖片
         #self.video1.imgtk=self.img_original #換圖片
         #self.video1.config(image=self.img_original) #換圖片
@@ -144,14 +177,14 @@ class MainApplication(tk.Tk):
         self.handConStyle = self.mpDraw.DrawingSpec(color=(0, 255, 0), thickness=10)
         #-------------pose--------------
         self.mpPose = mp.solutions.pose
-        self.myPose = self.mpPose.Pose()
+        self.myPose = self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
         self.PoseLmsStyle = self.mpDraw.DrawingSpec(color=(0,0,0),thickness=5)
         self.PoseConStyle = self.mpDraw.DrawingSpec(color=(255,255,0),thickness=10)
         return
     def mediapipe_hand(self):
         #mediapipe_hands處裡
         
-        self.hand_result = self.myhands.process(self.imgRGB)
+        self.hand_result = self.myhands.process(self.img)
         if self.hand_result.multi_hand_landmarks:
             #print(len(self.hand_result.multi_hand_landmarks))
             for handLms in self.hand_result.multi_hand_landmarks:#兩隻手所以多一層迴圈
@@ -185,15 +218,15 @@ class MainApplication(tk.Tk):
     def mediapipe_pose(self):
         #mediapipe_pose處裡
         
-        self.pose_result = self.myPose.process(self.imgRGB)
-        if self.pose_result.pose_landmarks:
+        pose_result = self.myPose.process(self.img)
+        if pose_result.pose_landmarks:
             self.mpDraw.draw_landmarks(self.img,
-                                  self.pose_result.pose_landmarks,#點
+                                  pose_result.pose_landmarks,#點
                                   self.mpPose.POSE_CONNECTIONS,#連線
                                   self.PoseLmsStyle,#點的Style
                                   self.PoseConStyle#連接線的Style
                                   )
-            for i, lm in enumerate(self.pose_result.pose_landmarks.landmark):
+            for i, lm in enumerate(pose_result.pose_landmarks.landmark):
                 xPos = int(lm.x * self.imgWidth)
                 yPos = int(lm.y * self.imgHeight)
                 #zPos = lm.z
@@ -205,22 +238,94 @@ class MainApplication(tk.Tk):
                             (0,0,255),#顏色
                             2,#租度
                             )
-                '''if (i == 11 or i == 12 or i == 13 or i == 14 or i == 15 or i == 16):
+                if (i == 11 or i == 12 or i == 13 or i == 14 or i == 15 or i == 16):
                     cv2.circle(self.img,
                                (xPos,yPos),#中心位置
                                10,#大小
                                (0,255,255),#顏色
                                cv2.FILLED#填滿
-                               )'''
+                               )
                 #print(i, xPos, yPos,zPos)
                 #print("i:{} x:{} y:{} z:{}".format(i,xPos,yPos,zPos))
+        #不曉得為何這樣不行
+        try:
+            landmarks = pose_result.pose_landmarks.landmark
+            self.out = gymMove.curl(landmarks, self.mpPose)
+        except:
+            pass
+        if self.out != None:
+            (self.leftcounter, self.rightcounter, self.leftstage, self.rightstage) = self.out
+            # status box
+            cv2.rectangle(self.img, (0, 0), (250, 73), (245, 117, 16), -1)
+            cv2.rectangle(self.img, (390, 0), (640, 73), (245, 117, 16), -1)
+
+            # LEFT REPS
+            cv2.putText(self.img, 'REPS', (15, 12),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+            cv2.putText(self.img, str(self.leftcounter), (10, 60),
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+            # LEFT STAGE
+            cv2.putText(self.img, 'STAGE', (85, 12),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+            cv2.putText(self.img, str(self.leftstage), (90, 60),
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+            # RIGHT REPS
+            cv2.putText(self.img, 'REPS', (405, 12),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+            cv2.putText(self.img, str(self.rightcounter), (400, 60),
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+            
+            # RIGHT STAGE
+            cv2.putText(self.img, 'STAGE', (475, 12),
+                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+            cv2.putText(self.img, str(self.rightstage), (480, 60),
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+        
+        # 更改動作偵測
+        
+        #self.pose = self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)#這行會把記憶體弄爆
+        
+        #這種寫法在這裡不知道為什麼會讓fps變得特別慢
+        '''with self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
+            pass
+            result = pose.process(self.imgRGB)
+            try:
+                landmarks = result.pose_landmarks.landmark
+                self.out = gymMove.curl(landmarks, self.mpPose)
+                #self.out = gymMove.triceps_extension(landmarks, self.mpPose)
+            except:
+                pass
+            if self.out != None:
+                (leftcounter, rightcounter, leftstage, rightstage) = self.out
+                # status box
+                cv2.rectangle(self.img, (0, 0), (250, 73), (245, 117, 16), -1)
+                cv2.rectangle(self.img, (390, 0), (640, 73), (245, 117, 16), -1)
+
+                # LEFT REPS
+                cv2.putText(self.img, 'REPS', (15, 12),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                cv2.putText(self.img, str(leftcounter), (10, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+                # LEFT STAGE
+                cv2.putText(self.img, 'STAGE', (85, 12),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                cv2.putText(self.img, str(leftstage), (90, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+                # RIGHT REPS
+                cv2.putText(self.img, 'REPS', (405, 12),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                cv2.putText(self.img, str(rightcounter), (400, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
                 
-            # 更改動作偵測
-            out = gymMove.curl(self.pose_result.pose_landmarks, self.mpPose)
-            if out:
-                (leftcounter, rightcounter, leftstage, rightstage) = out
-                # ERROR!!!!!!!!!!!!!!!!!
-                # self.label_plank_text.set('狀態:{} {} {} {}'.format(leftcounter, rightcounter, leftstage, rightstage))
+                # RIGHT STAGE
+                cv2.putText(self.img, 'STAGE', (475, 12),
+                    cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                cv2.putText(self.img, str(rightstage), (480, 60),
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)'''
         return
         
     
@@ -242,45 +347,51 @@ class MainApplication(tk.Tk):
         return
     def TK_object(self):
         #------------frame1----------------
-        self.frame1 = tk.Frame(bg="#00FFFF",width = 1920 ,height = 500  ,bd=0,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame1 = tk.Frame(bg="#00FFFF",width = 1280 ,height = 500  ,bd=0,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame1.pack_propagate(0)
         self.frame1.grid(row = 0,column = 0)
         #用label來放照片video1
         self.video1_title = tk.Label(self.frame1,width=49,height=1,bg ='gray94',fg='blue',text = '原始影像',font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
         self.video2_title = tk.Label(self.frame1,width=49,height=1,bg ='gray94',fg='blue',text = '處裡影像',font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
-        self.video3_title = tk.Label(self.frame1,width=49,height=1,bg ='gray94',fg='blue',text = '3D影像',font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
+        #self.video3_title = tk.Label(self.frame1,width=49,height=1,bg ='gray94',fg='blue',text = '3D影像',font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
         self.video1 = tk.Label(self.frame1,width=640,height=480,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
         self.video2 = tk.Label(self.frame1,width=640,height=480,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
-        self.video3 = tk.Label(self.frame1,width=640,height=480,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
+        #self.video3 = tk.Label(self.frame1,width=640,height=480,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
         #frame1物件布局
         self.video1_title.grid(row=0,column=0,padx=0, pady=0)
         self.video2_title.grid(row=0,column=1,padx=0, pady=0)
-        self.video3_title.grid(row=0,column=2,padx=0, pady=0)
+        #self.video3_title.grid(row=0,column=2,padx=0, pady=0)
         self.video1.grid(row=1,column=0,padx=0, pady=0)
         self.video2.grid(row=1,column=1,padx=0, pady=0)
-        self.video3.grid(row=1,column=2,padx=0, pady=0)
+        #self.video3.grid(row=1,column=2,padx=0, pady=0)
         #------------frame2----------------
-        self.frame2 = tk.Frame(bg="#FFFFFF",width = 1920 ,height = 400  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame2 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 400  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame2.pack_propagate(0)
         self.frame2.grid(row = 1,column = 0)
         #按鈕
-        self.button_open = tk.Button(self.frame2,text = '開啟網路攝像頭',bd=5,height=2,width=22,bg ='gray94',command =self.captrue_check,font=('微軟正黑體',16,'bold'))
-        self.button_close = tk.Button(self.frame2,text = '關閉網路攝像頭',bd=5,height=2,width=22,bg ='gray94',command =self.captrue_close,font=('微軟正黑體',16,'bold'))
+        self.button_open = tk.Button(self.frame2,text = '開啟網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_check,font=('微軟正黑體',16,'bold'))
+        self.button_close = tk.Button(self.frame2,text = '關閉網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_close,font=('微軟正黑體',16,'bold'))
         self.button_hand_text = tk.StringVar()
         self.button_hand_text.set('關閉Hand處裡')
-        self.button_hand = tk.Button(self.frame2,textvariable = self.button_hand_text,bd=5,height=2,width=22,bg ='gray94',command =self.hand_on_off,font=('微軟正黑體',16,'bold'))
+        self.button_hand = tk.Button(self.frame2,textvariable = self.button_hand_text,bd=5,height=2,width=12,bg ='gray94',command =self.hand_on_off,font=('微軟正黑體',16,'bold'))
         self.button_pose_text = tk.StringVar()
         self.button_pose_text.set('關閉Pose處裡')
-        self.button_pose = tk.Button(self.frame2,textvariable = self.button_pose_text,bd=5,height=2,width=22,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
+        self.button_pose = tk.Button(self.frame2,textvariable = self.button_pose_text,bd=5,height=2,width=12,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
+        
+        self.button_closeTK_text = tk.StringVar()
+        self.button_closeTK_text.set('關閉程式')
+        self.button_closeTK = tk.Button(self.frame2,textvariable = self.button_closeTK_text,bd=5,height=2,width=12,bg ='gray94',command =self.TK_closing,font=('微軟正黑體',16,'bold'))
+        
         self.label_plank_text = tk.StringVar()
         self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
-        self.label_plank = tk.Label(self.frame2,textvariable = self.label_plank_text,bd=5,height=2,width=22,bg ='gray94',font=('微軟正黑體',16,'bold'))
+        self.label_plank = tk.Label(self.frame2,textvariable = self.label_plank_text,bd=5,height=2,width=24,bg ='gray94',font=('微軟正黑體',16,'bold'),anchor=tk.W)
         #frame2物件布局
         self.button_open.grid(row=0, column=0, padx=0, pady=0)
         self.button_close.grid(row=0, column=1, padx=0, pady=0)
         self.button_hand.grid(row=0, column=2, padx=0, pady=0)
         self.button_pose.grid(row=0, column=3, padx=0, pady=0)
-        self.label_plank.grid(row=1, column=0, padx=0, pady=0)
+        self.button_closeTK.grid(row=0, column=4, padx=0, pady=0)
+        self.label_plank.grid(row=1, column=0, padx=0, pady=0,columnspan = 2)
         return
     def TK_updata(self):
         while True:
@@ -298,6 +409,8 @@ class MainApplication(tk.Tk):
                 continue
         return
     def TK_closing(self):
+        #del self.img
+        cv2.destroyAllWindows()
         self.Close_Control = False
         self.captrue.release() #關閉相機
         self.quit()
@@ -306,5 +419,5 @@ class MainApplication(tk.Tk):
         return
 if __name__ == '__main__':
     Start = MainApplication()
+    cv2.destroyAllWindows()
     
-
