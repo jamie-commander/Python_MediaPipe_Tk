@@ -9,9 +9,7 @@ from PIL import  ImageTk, Image, ImageDraw
 import cv2
 from threading import Timer
 import mediapipe as mp
-from CalcFunction import calc_on_line, calc_angle
-
-from torch import threshold
+import gymMove
 
 def mkdir():
     filepath = os.getcwd()#取得本地位置
@@ -216,44 +214,14 @@ class MainApplication(tk.Tk):
                                )'''
                 #print(i, xPos, yPos,zPos)
                 #print("i:{} x:{} y:{} z:{}".format(i,xPos,yPos,zPos))
-            self.detect_plank(self.pose_result.pose_landmarks.landmark)
+                
+            # 更改動作偵測
+            out = gymMove.curl(self.pose_result.pose_landmarks, self.mpPose)
+            if out:
+                (leftcounter, rightcounter, leftstage, rightstage) = out
+                # ERROR!!!!!!!!!!!!!!!!!
+                # self.label_plank_text.set('狀態:{} {} {} {}'.format(leftcounter, rightcounter, leftstage, rightstage))
         return
-    
-    def detect_plank(self, lms): #偵測是否有平板支撐的動作
-        # 12 -> right shoulder
-        # 24 -> right hip
-        # 26 -> right knee
-        # 28 -> right ankle
-
-        shoulder_x = lms[12].x
-        shoulder_y = lms[12].y
-        elbow_x = lms[14].x
-        elbow_y = lms[14].y
-        hip_x = lms[24].x
-        hip_y = lms[24].y
-        knee_x = lms[26].x
-        knee_y = lms[26].y
-        ankle_x = lms[28].x
-        ankle_y = lms[28].y
-        #-----------------門檻值 Hyperparameter--------------------
-        # 可更改
-        threshold_max_ShoulderAnkle_angle = 10
-        threshold_min_ShoulderElbow_angle = 63
-        threshold_max_ShoulderElbow_angle = 83
-        threshold_Hip = 110
-        threshold_Knee = 110
-        #------------------------------------------------
-        # 計算ankle與shoulder之間的角度
-        status1 = calc_angle(shoulder_x, shoulder_y, ankle_x, ankle_y, threshold_max_angle=threshold_max_ShoulderAnkle_angle) 
-        # 計算elbow與shoulder之間的角度
-        status2 = calc_angle(shoulder_x, shoulder_y, elbow_x, elbow_y, threshold_min_ShoulderElbow_angle, threshold_max_ShoulderElbow_angle) 
-        # 計算hip是否在ankle與shoulder之間
-        status3 = calc_on_line(hip_x, hip_y, shoulder_x, shoulder_y, ankle_x, ankle_y, threshold_Hip)
-        # 計算膝蓋是否在ankle與shoulder之間
-        status4 = calc_on_line(knee_x, knee_y, shoulder_x, shoulder_y, ankle_x, ankle_y, threshold_Knee)
-
-        self.plank_status = (status1 and status2 and status3 and status4)
-        self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
         
     
     def hand_on_off(self):
