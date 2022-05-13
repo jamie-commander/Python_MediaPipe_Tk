@@ -32,10 +32,18 @@ def clear():
     global rightcounter
     global leftstage
     global rightstage
+    global counter
+    global stage
+    global plank_starttime
+    global plank_currenttime
     leftcounter = 0
     rightcounter = 0
     leftstage = None
     rightstage = None
+    counter = 0
+    stage = None
+    plank_starttime = None
+    plank_currenttime = None
 
 # 二頭肌
 
