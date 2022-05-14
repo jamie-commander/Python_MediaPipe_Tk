@@ -37,7 +37,11 @@ class MainApplication(tk.Tk):
         self.hand_value = True
         self.pose_value = True
         self.s = None
-        self.plank_status = False #平板支撐的狀態
+        
+        self.gym_status = None
+        self.gym_model = "only one"
+        
+        #self.plank_status = False #平板支撐的狀態
         self.out = None
         self.captrue_init()
         self.mediapipe_init()
@@ -116,8 +120,8 @@ class MainApplication(tk.Tk):
             self.imgHeight = self.img.shape[0]
             self.imgWidth = self.img.shape[1]
             #---------------mediapipe_hand處裡--------------------
-            '''if(self.hand_value):
-                self.mediapipe_hand() #每個點的x、y、z資訊都在 self.hand_result'''
+            if(self.hand_value):
+                self.mediapipe_hand() #每個點的x、y、z資訊都在 self.hand_result
             #---------------mediapipe_hand處裡--------------------
             if(self.pose_value):
                 self.mediapipe_pose() #每個點的x、y、z資訊都在 self.pose_result處裡的資料
@@ -126,10 +130,10 @@ class MainApplication(tk.Tk):
             self.fps = 1/(self.cTime-self.pTime)
             self.pTime = self.cTime
             cv2.putText(self.img, f"FPS :{int(self.fps)}",
-                        (30,50),
+                        (10,470),
                         cv2.FONT_HERSHEY_SIMPLEX,
                         1,
-                        (255,0,0),
+                        (200,200,200),
                         3)
             #--------------處裡完成轉回RGB----------
             # convert color RGB to BGR
@@ -166,7 +170,7 @@ class MainApplication(tk.Tk):
             self.video1.after_cancel(self.s) #結束拍照
         self.video1.config(image=self.img_init) #換圖片
         self.video2.config(image=self.img_init) #換圖片
-        self.video3.config(image=self.img_init) #換圖片
+        #self.video3.config(image=self.img_init) #換圖片
         return
     def mediapipe_init(self):
         self.mpDraw = mp.solutions.drawing_utils
@@ -177,7 +181,8 @@ class MainApplication(tk.Tk):
         self.handConStyle = self.mpDraw.DrawingSpec(color=(0, 255, 0), thickness=10)
         #-------------pose--------------
         self.mpPose = mp.solutions.pose
-        self.myPose = self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+        #self.myPose = self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)
+        self.myPose = self.mpPose.Pose()
         self.PoseLmsStyle = self.mpDraw.DrawingSpec(color=(0,0,0),thickness=5)
         self.PoseConStyle = self.mpDraw.DrawingSpec(color=(255,255,0),thickness=10)
         return
@@ -287,7 +292,7 @@ class MainApplication(tk.Tk):
         
         #self.pose = self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5)#這行會把記憶體弄爆
         
-        #這種寫法在這裡不知道為什麼會讓fps變得特別慢
+        #這種寫法在這裡不知道為什麼會讓fps變得特別慢可能與with self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:有關
         '''with self.mpPose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
             pass
             result = pose.process(self.imgRGB)
@@ -365,33 +370,48 @@ class MainApplication(tk.Tk):
         self.video2.grid(row=1,column=1,padx=0, pady=0)
         #self.video3.grid(row=1,column=2,padx=0, pady=0)
         #------------frame2----------------
-        self.frame2 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 400  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame2 = tk.Frame(bg="#FFFFFF",width = 1270 ,height = 20  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame2.pack_propagate(0)
         self.frame2.grid(row = 1,column = 0)
+        #----------對話框label---------------------
+        self.message_title_label = tk.Label(self.frame2,text = "即時訊息：",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',16,'bold'))
+        self.message = tk.StringVar()
+        self.message.set("歡迎使用居家健身輔助軟體")
+        self.message_label = tk.Label(self.frame2,textvariable = self.message,width=89,height=1,bd=1,bg="#FFFFFF",fg="#000000",anchor=tk.W,font=('微軟正黑體',16,'bold'))
+        #frame2物件布局
+        self.message_title_label.grid(row=0, column=0, padx=0, pady=0)
+        self.message_label.grid(row=0, column=1, padx=0, pady=0)
+        
+        
+        #------------frame3----------------
+        self.frame3 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 380  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame3.pack_propagate(0)
+        self.frame3.grid(row = 2,column = 0)
         #按鈕
-        self.button_open = tk.Button(self.frame2,text = '開啟網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_check,font=('微軟正黑體',16,'bold'))
-        self.button_close = tk.Button(self.frame2,text = '關閉網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_close,font=('微軟正黑體',16,'bold'))
+        self.button_open = tk.Button(self.frame3,text = '開啟網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_check,font=('微軟正黑體',16,'bold'))
+        self.button_close = tk.Button(self.frame3,text = '關閉網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_close,font=('微軟正黑體',16,'bold'))
         self.button_hand_text = tk.StringVar()
         self.button_hand_text.set('關閉Hand處裡')
-        self.button_hand = tk.Button(self.frame2,textvariable = self.button_hand_text,bd=5,height=2,width=12,bg ='gray94',command =self.hand_on_off,font=('微軟正黑體',16,'bold'))
+        self.button_hand = tk.Button(self.frame3,textvariable = self.button_hand_text,bd=5,height=2,width=12,bg ='gray94',command =self.hand_on_off,font=('微軟正黑體',16,'bold'))
         self.button_pose_text = tk.StringVar()
         self.button_pose_text.set('關閉Pose處裡')
-        self.button_pose = tk.Button(self.frame2,textvariable = self.button_pose_text,bd=5,height=2,width=12,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
+        self.button_pose = tk.Button(self.frame3,textvariable = self.button_pose_text,bd=5,height=2,width=12,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
         
         self.button_closeTK_text = tk.StringVar()
         self.button_closeTK_text.set('關閉程式')
-        self.button_closeTK = tk.Button(self.frame2,textvariable = self.button_closeTK_text,bd=5,height=2,width=12,bg ='gray94',command =self.TK_closing,font=('微軟正黑體',16,'bold'))
+        self.button_closeTK = tk.Button(self.frame3,textvariable = self.button_closeTK_text,bd=5,height=2,width=12,bg ='gray94',command =self.TK_closing,font=('微軟正黑體',16,'bold'))
         
-        self.label_plank_text = tk.StringVar()
-        self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
-        self.label_plank = tk.Label(self.frame2,textvariable = self.label_plank_text,bd=5,height=2,width=24,bg ='gray94',font=('微軟正黑體',16,'bold'),anchor=tk.W)
-        #frame2物件布局
+        #self.label_plank_text = tk.StringVar()
+        #self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
+        #self.label_plank = tk.Label(self.frame2,textvariable = self.label_plank_text,bd=5,height=2,width=24,bg ='gray94',font=('微軟正黑體',16,'bold'),anchor=tk.W)
+
+        #frame3物件布局
         self.button_open.grid(row=0, column=0, padx=0, pady=0)
         self.button_close.grid(row=0, column=1, padx=0, pady=0)
         self.button_hand.grid(row=0, column=2, padx=0, pady=0)
         self.button_pose.grid(row=0, column=3, padx=0, pady=0)
         self.button_closeTK.grid(row=0, column=4, padx=0, pady=0)
-        self.label_plank.grid(row=1, column=0, padx=0, pady=0,columnspan = 2)
+        #self.label_plank.grid(row=1, column=0, padx=0, pady=0,columnspan = 2)
         return
     def TK_updata(self):
         while True:
