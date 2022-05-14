@@ -4,6 +4,7 @@ import json
 import time
 import sys
 #from tkinter import *
+from tkinter import ttk
 import tkinter as tk
 from PIL import  ImageTk, Image, ImageDraw
 import cv2
@@ -38,8 +39,23 @@ class MainApplication(tk.Tk):
         self.pose_value = True
         self.s = None
         
-        self.gym_status = None
+        self.gym_model_status = None
+        self.gym_item_status = None
+        self.gym_cycle_status = None
+        self.gym_several_status = None
+        self.gym_intervals_status = None
+        
         self.gym_model = "only one"
+        self.gym_item = "二頭肌"
+        self.gym_cycle = "3"
+        self.gym_several = "12"
+        self.gym_intervals = "30"
+        
+        self.sys_start_time = time.time()
+        self.sys_bus_time1 = 0
+        self.sys_bus_time2 = 0
+        self.sys_bus_time3 = 0
+        self.sys_new_time = 0
         
         #self.plank_status = False #平板支撐的狀態
         self.out = None
@@ -147,7 +163,7 @@ class MainApplication(tk.Tk):
             
             #cv2.imwrite(self.img_video_process,self.img)#儲存處裡後圖片
             #cv2.imshow('img',self.img)
-        
+        self.time_updata()
         #---------------------更新圖片方法，這方法不太好一直讀寫圖片-----------------------------
         '''self.img_original = ImageTk.PhotoImage(Image.open(self.img_video)) #讀取圖片
         #self.video1.imgtk=self.img_original #換圖片
@@ -171,6 +187,10 @@ class MainApplication(tk.Tk):
         self.video1.config(image=self.img_init) #換圖片
         self.video2.config(image=self.img_init) #換圖片
         #self.video3.config(image=self.img_init) #換圖片
+        return
+    def time_updata(self):
+        self.sys_new_time = time.time()
+        self.message.set(str(self.sys_new_time-self.sys_start_time))
         return
     def mediapipe_init(self):
         self.mpDraw = mp.solutions.drawing_utils
@@ -350,6 +370,30 @@ class MainApplication(tk.Tk):
             self.button_pose_text.set("關閉Pose處裡")
             self.pose_value = True
         return
+    def callbackFunc(self,Event):
+        #global file,filepath,myfile
+        #file=combo.get()
+        #print(combo.get())
+        #self.focus()
+        model = self.selection_model.get()
+        if(model=="only one"):
+            item = ["二頭肌彎舉", "三頭肌屈伸","反式屈膝捲腹","伏地挺身","單臂划船","深蹲","墊脚","啞鈴側平舉","啞鈴肩推","開合跳","平面支撐"]
+            self.selection_item["values"] = item
+            self.selection_item.set(item[0])
+        elif(model == "fitness combo"):
+            item = ["手部(二頭肌彎舉、三頭肌屈伸)","腹部(反式屈膝捲腹、伏地挺身)","背部(單臂划船)","大腿(深蹲)","小腿(墊脚)","肩膀(啞鈴側平舉、啞鈴肩推)","核心(開合跳、平面支撐)"]
+            self.selection_item["values"] = item
+            self.selection_item.set(item[0])
+            pass
+        return
+    def fitness_start(self):
+        self.gym_model = self.selection_model.get()
+        self.gym_item = self.selection_item.get()
+        self.gym_cycle = self.selection_cycle.get()
+        self.gym_several = self.selection_several.get()
+        self.gym_intervals = self.selection_intervals.get()
+        self.message.set("您的選擇是 [" + self.gym_model + "][" + self.gym_item + "][循環" + self.gym_cycle + "次][單項" + self.gym_several + "次][循環間隔" + self.gym_intervals + "秒] 在五秒後開始")
+        return
     def TK_object(self):
         #------------frame1----------------
         self.frame1 = tk.Frame(bg="#00FFFF",width = 1280 ,height = 500  ,bd=0,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
@@ -382,30 +426,76 @@ class MainApplication(tk.Tk):
         self.message_title_label.grid(row=0, column=0, padx=0, pady=0)
         self.message_label.grid(row=0, column=1, padx=0, pady=0)
         
-        
         #------------frame3----------------
-        self.frame3 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 380  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame3 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 360  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame3.pack_propagate(0)
         self.frame3.grid(row = 2,column = 0)
+        #------------frame3物件------------
+        self.selection_model_label = tk.Label(self.frame3,text = "健身模式",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
+        self.selection_model = tk.ttk.Combobox(self.frame3,values=["only one","fitness combo"],width=12,font=('微軟正黑體',12),state="readonly")
+        self.selection_model.set(self.gym_model)
+        #self.selection_model["values"]= ["1","2"]
+        self.selection_model.bind("<<ComboboxSelected>>",self.callbackFunc)
+        
+        self.selection_item_label = tk.Label(self.frame3,text = "健身項目",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
+        self.selection_item = tk.ttk.Combobox(self.frame3,values=["二頭肌彎舉", "三頭肌屈伸","單臂划船","反式屈膝捲腹","深蹲","墊脚","啞鈴側平舉","啞鈴肩推","開合跳","平面支撐"],width=36,font=('微軟正黑體',12),state="readonly")
+        self.selection_item.set(self.gym_item)
+        
+        self.selection_cycle_label = tk.Label(self.frame3,text = "循環次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
+        self.selection_cycle = tk.ttk.Combobox(self.frame3,values=["1", "2","3","4","5","6","7","8","9","10"],width=4,font=('微軟正黑體',12),state="readonly")
+        self.selection_cycle.set("3")
+        
+        self.selection_several_label = tk.Label(self.frame3,text = "單項次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
+        self.selection_several = tk.ttk.Combobox(self.frame3,values=["3","6","9","12","15","18","21","24","27","30"],width=4,font=('微軟正黑體',12),state="readonly")
+        self.selection_several.set("12")
+        
+        self.selection_intervals_label = tk.Label(self.frame3,text = "循環間隔(秒)",width=12,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
+        self.selection_intervals = tk.ttk.Combobox(self.frame3,values=["10","20","30","40","50","60","120","180","240","300"],width=4,font=('微軟正黑體',12),state="readonly")
+        self.selection_intervals.set("30")
+        
         #按鈕
-        self.button_open = tk.Button(self.frame3,text = '開啟網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_check,font=('微軟正黑體',16,'bold'))
-        self.button_close = tk.Button(self.frame3,text = '關閉網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_close,font=('微軟正黑體',16,'bold'))
+        self.button_fitness_start = tk.Button(self.frame3,text = '開始訓練',bd=5,height=2,width=12,bg="#000000",fg="#FFFFFF",command =self.fitness_start,font=('微軟正黑體',12,'bold'),relief=tk.GROOVE)
+        
+        #self.selection_item["values"]= ["1","2"]
+        #self.selection_item.bind("<<ComboboxSelected>>",self.callbackFunc)
+        #frame3物件布局
+        self.selection_model_label.grid(row=0, column=0, padx=0, pady=0)
+        self.selection_model.grid(row=0, column=1, padx=0, pady=0)
+        self.selection_item_label.grid(row=0, column=2, padx=0, pady=0)
+        self.selection_item.grid(row=0, column=3, padx=0, pady=0)
+        self.selection_cycle_label.grid(row=0, column=4, padx=0, pady=0)
+        self.selection_cycle.grid(row=0, column=5, padx=0, pady=0)
+        self.selection_several_label.grid(row=0, column=6, padx=0, pady=0)
+        self.selection_several.grid(row=0, column=7, padx=0, pady=0)
+        self.selection_intervals_label.grid(row=0, column=8, padx=0, pady=0)
+        self.selection_intervals.grid(row=0, column=9, padx=0, pady=0)
+        
+        self.button_fitness_start.grid(row=0, column=10, padx=7, pady=2)
+        #------------frame4----------------
+        self.frame4 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 20  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame4.pack_propagate(0)
+        self.frame4.grid(row = 3,column = 0)
+        #------------frame4物件------------
+        #frame4物件布局
+        #按鈕
+        self.button_open = tk.Button(self.frame4,text = '開啟網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_check,font=('微軟正黑體',16,'bold'))
+        self.button_close = tk.Button(self.frame4,text = '關閉網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_close,font=('微軟正黑體',16,'bold'))
         self.button_hand_text = tk.StringVar()
         self.button_hand_text.set('關閉Hand處裡')
-        self.button_hand = tk.Button(self.frame3,textvariable = self.button_hand_text,bd=5,height=2,width=12,bg ='gray94',command =self.hand_on_off,font=('微軟正黑體',16,'bold'))
+        self.button_hand = tk.Button(self.frame4,textvariable = self.button_hand_text,bd=5,height=2,width=12,bg ='gray94',command =self.hand_on_off,font=('微軟正黑體',16,'bold'))
         self.button_pose_text = tk.StringVar()
         self.button_pose_text.set('關閉Pose處裡')
-        self.button_pose = tk.Button(self.frame3,textvariable = self.button_pose_text,bd=5,height=2,width=12,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
+        self.button_pose = tk.Button(self.frame4,textvariable = self.button_pose_text,bd=5,height=2,width=12,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
         
         self.button_closeTK_text = tk.StringVar()
         self.button_closeTK_text.set('關閉程式')
-        self.button_closeTK = tk.Button(self.frame3,textvariable = self.button_closeTK_text,bd=5,height=2,width=12,bg ='gray94',command =self.TK_closing,font=('微軟正黑體',16,'bold'))
+        self.button_closeTK = tk.Button(self.frame4,textvariable = self.button_closeTK_text,bd=5,height=2,width=12,bg ='gray94',command =self.TK_closing,font=('微軟正黑體',16,'bold'))
         
         #self.label_plank_text = tk.StringVar()
         #self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
         #self.label_plank = tk.Label(self.frame2,textvariable = self.label_plank_text,bd=5,height=2,width=24,bg ='gray94',font=('微軟正黑體',16,'bold'),anchor=tk.W)
 
-        #frame3物件布局
+        #frame4物件布局
         self.button_open.grid(row=0, column=0, padx=0, pady=0)
         self.button_close.grid(row=0, column=1, padx=0, pady=0)
         self.button_hand.grid(row=0, column=2, padx=0, pady=0)
