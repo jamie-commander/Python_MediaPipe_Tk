@@ -39,6 +39,7 @@ class MainApplication(tk.Tk):
         self.pose_value = True
         self.s = None
         
+        self.count = 0
         #self.gym_model_status = None#暫時用不到
         self.gym_item_status = None
         self.gym_cycle_status = None
@@ -53,11 +54,14 @@ class MainApplication(tk.Tk):
         self.gym_intervals = "30"
         
         self.sys_start_time = time.time()
-        self.sys_bus_time1 = 0
+        
+        self.gym_new_time = 0
+        self.gym_start_time = 0
+        self.gym_count_time_1 = 0
+        self.gym_buf_time = 0
+        
         self.sys_bus_time2 = 0
         self.sys_bus_time3 = 0
-        self.sys_new_time = 0
-        self.sys_buf_time = 0
         
         self.gym_items = {
             "二頭肌彎舉": gymMove.curl,
@@ -212,27 +216,48 @@ class MainApplication(tk.Tk):
         #self.video3.config(image=self.img_init) #換圖片
         return
     def time_updata(self):
-        self.sys_new_time = time.time()
+        self.gym_new_time = time.time() - self.gym_start_time
         #self.leftcounter, self.rightcounter, self.leftstage, self.rightstage
         #round(1.2312, 2)#1.23
-        if(round(self.sys_buf_time) != self.sys_new_time):
+        #self.message.set(str(int(self.gym_new_time)))
+        if(self.gym_model == "only one" or self.gym_model == "fitness combo"):
+            #self.message.set("only one")
+            #self.message.set("fitness combo")
+            if(int(self.gym_buf_time) != int(self.gym_new_time)):
+                self.Second_trigger()
+                pass
+            if(self.gym_count_time_1 > 0):
+                cv2.rectangle(self.img, (270, 160), (370, 280), (0, 0, 0), -1)
+                cv2.putText(self.img, str(int(self.gym_count_time_1)), (280, 260),
+                cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+            elif(self.gym_count_time_1 == 0):
+                cv2.rectangle(self.img, (220, 220), (420, 300), (255, 255, 255), -1)
+                cv2.putText(self.img, "START", (230, 280),
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,0), 2, cv2.LINE_AA)
+            else:
+                pass
+                
+            if(self.gym_model == "only one"):
+                pass
+            elif(self.gym_model == "fitness combo"):
+                pass
+            else:
+                pass
             pass
-        cv2.rectangle(self.img, (270, 160), (370, 280), (0, 0, 0), -1)
-        cv2.putText(self.img, '5', (280, 260),
-            cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
-        if(self.gym_model == "only one"):
-            self.message.set("only one")
-            pass
-        elif(self.gym_model == "fitness combo"):
-            self.message.set("fitness combo")
-            pass
+        
+        
         else:
             self.message.set("請選擇好訓練項目、設定好參數後，按下""開始訓練""得繼續訓練。")
             pass
-        self.sys_buf_time = self.sys_new_time()
-        #self.message.set(str(self.sys_new_time-self.sys_start_time))
+        self.gym_buf_time = self.gym_new_time
+        #self.message.set(str(self.gym_new_time-self.gym_start_time))
         return
     def Second_trigger(self):
+        #測試是不是一秒執行一次用
+        #self.message.set(str(self.count))
+        #self.count = self.count + 1
+        self.gym_count_time_1 = self.gym_count_time_1 - 1
+        
         return
     def mediapipe_init(self):
         self.mpDraw = mp.solutions.drawing_utils
@@ -438,6 +463,7 @@ class MainApplication(tk.Tk):
         if self.captrue.isOpened():
             self.message.set("您的選擇是 [" + self.gym_model + "][" + self.gym_item + "][循環" + self.gym_cycle + "次][單項" + self.gym_several + "次][循環間隔" + self.gym_intervals + "秒] 在五秒後開始")
             self.gym_start_time = time.time()
+            self.gym_count_time_1 = 5
             pass
         else:
             self.message.set("請先開啟攝像頭才可以開始訓練。")
