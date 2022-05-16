@@ -39,14 +39,15 @@ class MainApplication(tk.Tk):
         self.pose_value = True
         self.s = None
         
-        self.gym_model_status = None
+        #self.gym_model_status = None#暫時用不到
         self.gym_item_status = None
         self.gym_cycle_status = None
         self.gym_several_status = None
         self.gym_intervals_status = None
         
-        self.gym_model = "only one"
-        self.gym_item = "二頭肌"
+        #self.gym_model = "only one"
+        self.gym_model = ""
+        self.gym_item = "二頭肌彎舉"
         self.gym_cycle = "3"
         self.gym_several = "12"
         self.gym_intervals = "30"
@@ -57,9 +58,26 @@ class MainApplication(tk.Tk):
         self.sys_bus_time3 = 0
         self.sys_new_time = 0
         
+        
+        self.gym_items = {
+            "二頭肌彎舉": gymMove.curl,
+            "三頭肌屈伸": gymMove.triceps_extension,
+            "反式屈膝捲腹": gymMove.reverse_crunch,
+            "伏地挺身": gymMove.pushup,
+            "單臂划船": gymMove.one_arm_row,
+            "深蹲": gymMove.squat,
+            "墊脚": gymMove.tiptoe,
+            "啞鈴側平舉": gymMove.Dumbbell_Lateral_Raise,
+            "啞鈴肩推": gymMove.Dumbbell_Shoulder_Press,
+            "開合跳": gymMove.starjump,
+            "平面支撐": gymMove.plank,
+            }
+        
         #self.plank_status = False #平板支撐的狀態
         self.out = None
         self.captrue_init()
+        self.captrue.release()
+        
         self.mediapipe_init()
         self.TK_main()
     def TK_main(self):
@@ -97,11 +115,13 @@ class MainApplication(tk.Tk):
         self.captrue.set(cv2.CAP_PROP_FRAME_HEIGHT, 480)
         return
     def captrue_check(self):
-        if self.captrue.isOpened(): #判斷相機是否有開啟
+        '''if self.captrue.isOpened(): #判斷相機是否有開啟
             self.captrue_open()
         else:
             self.captrue_init()
-            self.captrue_open()
+            self.captrue_open()'''
+        self.captrue_init()
+        self.captrue_open()
         return
     def captrue_open(self):
         self.button_open["state"] = tk.DISABLED
@@ -123,14 +143,13 @@ class MainApplication(tk.Tk):
             #ImageTk.PhotoImage
             #https://stackoverflow.com/questions/28670461/read-an-image-with-opencv-and-display-it-with-tkinter
             
-            self.img_original = Image.fromarray(self.img)
-            self.img_original = ImageTk.PhotoImage(image = self.img_original)
-            self.video1.config(image=self.img_original)
-            
             # convert color BGR to RGB
             self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)#轉RGB
             self.img.flags.writeable = False
             
+            self.img_original = Image.fromarray(self.img)
+            self.img_original = ImageTk.PhotoImage(image = self.img_original)
+            self.video1.config(image=self.img_original)
             
             #取得圖片高度寬度
             self.imgHeight = self.img.shape[0]
@@ -151,10 +170,12 @@ class MainApplication(tk.Tk):
                         1,
                         (200,200,200),
                         3)
+            
+            self.time_updata()
             #--------------處裡完成轉回RGB----------
             # convert color RGB to BGR
-            self.img.flags.writeable = True
-            self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)
+            #self.img.flags.writeable = True
+            #self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2BGR)
             
             #------------在tk第一個畫面上秀出處理圖片---------------------
             self.img_process = Image.fromarray(self.img)
@@ -163,7 +184,6 @@ class MainApplication(tk.Tk):
             
             #cv2.imwrite(self.img_video_process,self.img)#儲存處裡後圖片
             #cv2.imshow('img',self.img)
-        self.time_updata()
         #---------------------更新圖片方法，這方法不太好一直讀寫圖片-----------------------------
         '''self.img_original = ImageTk.PhotoImage(Image.open(self.img_video)) #讀取圖片
         #self.video1.imgtk=self.img_original #換圖片
@@ -186,11 +206,27 @@ class MainApplication(tk.Tk):
             self.video1.after_cancel(self.s) #結束拍照
         self.video1.config(image=self.img_init) #換圖片
         self.video2.config(image=self.img_init) #換圖片
+        
+        self.gym_model = ""
+        self.message.set("攝像頭已經關閉，若想繼續訓練請開啟攝像頭。")
         #self.video3.config(image=self.img_init) #換圖片
         return
     def time_updata(self):
         self.sys_new_time = time.time()
-        self.message.set(str(self.sys_new_time-self.sys_start_time))
+        #self.leftcounter, self.rightcounter, self.leftstage, self.rightstage
+        cv2.rectangle(self.img, (270, 160), (370, 280), (0, 0, 0), -1)
+        cv2.putText(self.img, '5', (280, 260),
+            cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+        if(self.gym_model == "only one"):
+            self.message.set("only one")
+            pass
+        elif(self.gym_model == "fitness combo"):
+            self.message.set("fitness combo")
+            pass
+        else:
+            self.message.set("請選擇好訓練項目、設定好參數後，按下""開始訓練""得繼續訓練。")
+            pass
+        #self.message.set(str(self.sys_new_time-self.sys_start_time))
         return
     def mediapipe_init(self):
         self.mpDraw = mp.solutions.drawing_utils
@@ -275,7 +311,8 @@ class MainApplication(tk.Tk):
         #不曉得為何這樣不行
         try:
             landmarks = pose_result.pose_landmarks.landmark
-            self.out = gymMove.curl(landmarks, self.mpPose)
+            #self.out = gymMove.curl(landmarks, self.mpPose)
+            self.out = (self.gym_items[self.gym_item])(landmarks, self.mpPose)
         except:
             pass
         if self.out != None:
@@ -392,7 +429,12 @@ class MainApplication(tk.Tk):
         self.gym_cycle = self.selection_cycle.get()
         self.gym_several = self.selection_several.get()
         self.gym_intervals = self.selection_intervals.get()
-        self.message.set("您的選擇是 [" + self.gym_model + "][" + self.gym_item + "][循環" + self.gym_cycle + "次][單項" + self.gym_several + "次][循環間隔" + self.gym_intervals + "秒] 在五秒後開始")
+        if self.captrue.isOpened():
+            self.message.set("您的選擇是 [" + self.gym_model + "][" + self.gym_item + "][循環" + self.gym_cycle + "次][單項" + self.gym_several + "次][循環間隔" + self.gym_intervals + "秒] 在五秒後開始")
+            self.gym_start_time = time.time()
+            pass
+        else:
+            self.message.set("請先開啟攝像頭才可以開始訓練。")
         return
     def TK_object(self):
         #------------frame1----------------
@@ -420,7 +462,7 @@ class MainApplication(tk.Tk):
         #----------對話框label---------------------
         self.message_title_label = tk.Label(self.frame2,text = "即時訊息：",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',16,'bold'))
         self.message = tk.StringVar()
-        self.message.set("歡迎使用居家健身輔助軟體")
+        self.message.set("歡迎使用居家健身輔助軟體，請先開啟攝像頭得繼續操作。")
         self.message_label = tk.Label(self.frame2,textvariable = self.message,width=89,height=1,bd=1,bg="#FFFFFF",fg="#000000",anchor=tk.W,font=('微軟正黑體',16,'bold'))
         #frame2物件布局
         self.message_title_label.grid(row=0, column=0, padx=0, pady=0)
@@ -433,7 +475,7 @@ class MainApplication(tk.Tk):
         #------------frame3物件------------
         self.selection_model_label = tk.Label(self.frame3,text = "健身模式",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
         self.selection_model = tk.ttk.Combobox(self.frame3,values=["only one","fitness combo"],width=12,font=('微軟正黑體',12),state="readonly")
-        self.selection_model.set(self.gym_model)
+        self.selection_model.set("only one")
         #self.selection_model["values"]= ["1","2"]
         self.selection_model.bind("<<ComboboxSelected>>",self.callbackFunc)
         
