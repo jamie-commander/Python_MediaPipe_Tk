@@ -57,7 +57,7 @@ class MainApplication(tk.Tk):
         self.sys_bus_time2 = 0
         self.sys_bus_time3 = 0
         self.sys_new_time = 0
-        
+        self.sys_buf_time = 0
         
         self.gym_items = {
             "二頭肌彎舉": gymMove.curl,
@@ -214,6 +214,9 @@ class MainApplication(tk.Tk):
     def time_updata(self):
         self.sys_new_time = time.time()
         #self.leftcounter, self.rightcounter, self.leftstage, self.rightstage
+        #round(1.2312, 2)#1.23
+        if(round(self.sys_buf_time) != self.sys_new_time):
+            pass
         cv2.rectangle(self.img, (270, 160), (370, 280), (0, 0, 0), -1)
         cv2.putText(self.img, '5', (280, 260),
             cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
@@ -226,7 +229,10 @@ class MainApplication(tk.Tk):
         else:
             self.message.set("請選擇好訓練項目、設定好參數後，按下""開始訓練""得繼續訓練。")
             pass
+        self.sys_buf_time = self.sys_new_time()
         #self.message.set(str(self.sys_new_time-self.sys_start_time))
+        return
+    def Second_trigger(self):
         return
     def mediapipe_init(self):
         self.mpDraw = mp.solutions.drawing_utils
