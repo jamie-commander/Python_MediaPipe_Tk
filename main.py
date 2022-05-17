@@ -293,7 +293,9 @@ class MainApplication(tk.Tk):
                             landmarks = self.pose_result.pose_landmarks.landmark
                             #self.out = gymMove.curl(landmarks, self.mpPose)
                             #self.out = (self.gym_items[self.gym_item])(landmarks, self.mpPose)
-                            self.out = (self.gym_items[self.gym_item_status[self.gym_items_status]])(landmarks, self.mpPose)
+                            #self.out = (self.gym_items[self.gym_item_status[self.gym_items_status]])(landmarks, self.mpPose)
+                            gymMove.update(landmarks, self.mpPose)
+                            self.out = (self.gym_items[self.gym_item_status[self.gym_items_status]])()
                         except:
                             pass
                         if self.out != None:
@@ -361,7 +363,9 @@ class MainApplication(tk.Tk):
                             landmarks = self.pose_result.pose_landmarks.landmark
                             #self.out = gymMove.curl(landmarks, self.mpPose)
                             #self.out = (self.gym_items[self.gym_item])(landmarks, self.mpPose)
-                            self.out = (self.gym_items[self.gym_item_status[self.gym_items_status]])(landmarks, self.mpPose)
+                            #self.out = (self.gym_items[self.gym_item_status[self.gym_items_status]])(landmarks, self.mpPose)
+                            gymMove.update(landmarks, self.mpPose)
+                            self.out = (self.gym_items[self.gym_item_status[self.gym_items_status]])()
                         except:
                             pass
                         if self.out != None:
