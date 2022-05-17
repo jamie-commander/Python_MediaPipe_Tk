@@ -12,6 +12,12 @@ from threading import Timer
 import mediapipe as mp
 import gymMove
 
+import pygame
+pygame.init()
+pygame.mixer.init()
+pygame.time.delay(1000)#等待1秒讓mixer完成初始化
+
+
 def mkdir():
     filepath = os.getcwd()#取得本地位置
     #if os.path.isdir(os.path.join(filepath,"resource")):
@@ -43,8 +49,8 @@ class MainApplication(tk.Tk):
         #self.gym_model_status = None#暫時用不到
         self.gym_item_status = None
         self.gym_cycle_status = None
-        self.gym_several_status = None
-        self.gym_intervals_status = None
+        
+        self.gym_items_status = 0
         
         #self.gym_model = "only one"
         self.gym_model = ""
@@ -60,12 +66,23 @@ class MainApplication(tk.Tk):
         self.gym_count_time_1 = 0
         self.gym_buf_time = 0
         
+        self.gym_several_status = False
+        
+        self.gym_status = False
+        
         self.sys_bus_time2 = 0
         self.sys_bus_time3 = 0
+        
+        self.leftcounter = 0
+        self.rightcounter = 0
+        self.leftstage = None
+        self.rightstage = None
         
         self.gym_items = {
             "二頭肌彎舉": gymMove.curl,
             "三頭肌屈伸": gymMove.triceps_extension,
+            #"三頭肌屈伸": gymMove.plank,
+            #"三頭肌屈伸": gymMove.curl,
             "反式屈膝捲腹": gymMove.reverse_crunch,
             "伏地挺身": gymMove.pushup,
             "單臂划船": gymMove.one_arm_row,
@@ -76,7 +93,24 @@ class MainApplication(tk.Tk):
             "開合跳": gymMove.starjump,
             "平面支撐": gymMove.plank,
             }
-        
+        self.gym_models = {
+            "手部(二頭肌彎舉、三頭肌屈伸)":{"二頭肌彎舉","三頭肌屈伸"},
+            "腹部(反式屈膝捲腹、伏地挺身)":{"反式屈膝捲腹","伏地挺身"},
+            "背部(單臂划船)":{"單臂划船"},
+            "大腿(深蹲)":{"深蹲"},
+            "小腿(墊脚)":{"墊脚"},
+            "肩膀(啞鈴側平舉、啞鈴肩推)":{"啞鈴側平舉","啞鈴肩推"},
+            "核心(開合跳、平面支撐)":{"開合跳","平面支撐"},
+            }
+        '''self.gym_models = {
+            "手部(二頭肌彎舉、三頭肌屈伸)":{"三頭肌屈伸","二頭肌彎舉"},
+            "腹部(反式屈膝捲腹、伏地挺身)":{"伏地挺身","反式屈膝捲腹"},
+            "背部(單臂划船)":{"單臂划船"},
+            "大腿(深蹲)":{"深蹲"},
+            "小腿(墊脚)":{"墊脚"},
+            "肩膀(啞鈴側平舉、啞鈴肩推)":{"啞鈴肩推","啞鈴側平舉"},
+            "核心(開合跳、平面支撐)":{"平面支撐","開合跳"},
+            }'''
         #self.plank_status = False #平板支撐的狀態
         self.out = None
         self.captrue_init()
@@ -211,51 +245,207 @@ class MainApplication(tk.Tk):
         self.video1.config(image=self.img_init) #換圖片
         self.video2.config(image=self.img_init) #換圖片
         
+        self.gym_items_status = 0
+        gymMove.clear()
         self.gym_model = ""
         self.message.set("攝像頭已經關閉，若想繼續訓練請開啟攝像頭。")
         #self.video3.config(image=self.img_init) #換圖片
         return
     def time_updata(self):
-        self.gym_new_time = time.time() - self.gym_start_time
+        self.gym_new_time = int(time.time() - self.gym_start_time)
         #self.leftcounter, self.rightcounter, self.leftstage, self.rightstage
         #round(1.2312, 2)#1.23
         #self.message.set(str(int(self.gym_new_time)))
         if(self.gym_model == "only one" or self.gym_model == "fitness combo"):
             #self.message.set("only one")
             #self.message.set("fitness combo")
-            if(int(self.gym_buf_time) != int(self.gym_new_time)):
+            if(self.gym_buf_time != self.gym_new_time):
                 self.Second_trigger()
                 pass
-            if(self.gym_count_time_1 > 0):
-                cv2.rectangle(self.img, (270, 160), (370, 280), (0, 0, 0), -1)
-                cv2.putText(self.img, str(int(self.gym_count_time_1)), (280, 260),
-                cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+            
+            if(self.gym_count_time_1 > 0 ):
+                t = ""
+                if(self.gym_count_time_1 < int(self.gym_intervals)):
+                    t = str(self.gym_count_time_1)
+                else:
+                    t = str(self.gym_intervals)
+                if(self.gym_count_time_1 > 99):
+                    cv2.rectangle(self.img, (190, 160), (450, 280), (0, 0, 0), -1)
+                    cv2.putText(self.img, t, (200, 260),
+                    cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+                elif(self.gym_count_time_1 > 9):
+                    cv2.rectangle(self.img, (230, 160), (410, 280), (0, 0, 0), -1)
+                    cv2.putText(self.img, t, (240, 260),
+                    cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+                else:
+                    cv2.rectangle(self.img, (270, 160), (370, 280), (0, 0, 0), -1)
+                    cv2.putText(self.img, t, (280, 260),
+                    cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+                self.message.set("鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
             elif(self.gym_count_time_1 == 0):
                 cv2.rectangle(self.img, (220, 220), (420, 300), (255, 255, 255), -1)
                 cv2.putText(self.img, "START", (230, 280),
                 cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,0), 2, cv2.LINE_AA)
             else:
-                pass
-                
-            if(self.gym_model == "only one"):
-                pass
-            elif(self.gym_model == "fitness combo"):
-                pass
-            else:
-                pass
-            pass
-        
+                if(self.gym_model == "only one"):
+                    if(int(self.gym_cycle_status) > 0):
+                        try:
+                            landmarks = self.pose_result.pose_landmarks.landmark
+                            #self.out = gymMove.curl(landmarks, self.mpPose)
+                            #self.out = (self.gym_items[self.gym_item])(landmarks, self.mpPose)
+                            self.out = (self.gym_items[self.gym_item_status[self.gym_items_status]])(landmarks, self.mpPose)
+                        except:
+                            pass
+                        if self.out != None:
+                            (self.leftcounter, self.rightcounter, self.leftstage, self.rightstage) = self.out
+                            # status box
+                            cv2.rectangle(self.img, (0, 0), (250, 73), (245, 117, 16), -1)
+                            cv2.rectangle(self.img, (390, 0), (640, 73), (245, 117, 16), -1)
+
+                            # LEFT REPS
+                            cv2.putText(self.img, 'REPS', (15, 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(self.img, str(self.leftcounter), (10, 60),
+                                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+                            # LEFT STAGE
+                            cv2.putText(self.img, 'STAGE', (85, 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(self.img, str(self.leftstage), (90, 60),
+                                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+                            # RIGHT REPS
+                            cv2.putText(self.img, 'REPS', (405, 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(self.img, str(self.rightcounter), (400, 60),
+                                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+                            
+                            # RIGHT STAGE
+                            cv2.putText(self.img, 'STAGE', (475, 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(self.img, str(self.rightstage), (480, 60),
+                                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+                            
+                            
+                        if((self.rightcounter >= int(self.gym_several)) and (self.leftcounter >= int(self.gym_several))):
+                            self.gym_several_status = True
+                        else:
+                            self.gym_several_status = False
+                            
+                        if((self.gym_several_status) == True):
+                            self.gym_items_status = 0#重製項目順序
+                            self.gym_cycle_status = str(int( self.gym_cycle_status) - 1) #做完一個cycle
+                            gymMove.clear()#清空
+                            if(int(self.gym_cycle_status) == 0):
+                                self.message.set("已完成所有循環，請選擇健身項目繼續下一個訓練。")
+                                #self.gym_count_time_1 = 0
+                                pass
+                            else:
+                                self.gym_count_time_1 = int(self.gym_intervals) + 2 #循環間隔
+                                self.message.set( self.gym_intervals + "秒後開始下一個循環，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
+                            pass
+                        else:
+                            pass
+                        
+                        pass
+                    else:
+                        #self.gym_cycle_status = str(int( self.gym_cycle_status) - 1)
+                        #self.gym_items_status = 0
+                        #self.gym_count_time_1 = -1
+                        #gymMove.clear()
+                        pass
+                    pass
+                elif(self.gym_model == "fitness combo"):
+                    if(int(self.gym_cycle_status) > 0):
+                        try:
+                            landmarks = self.pose_result.pose_landmarks.landmark
+                            #self.out = gymMove.curl(landmarks, self.mpPose)
+                            #self.out = (self.gym_items[self.gym_item])(landmarks, self.mpPose)
+                            self.out = (self.gym_items[self.gym_item_status[self.gym_items_status]])(landmarks, self.mpPose)
+                        except:
+                            pass
+                        if self.out != None:
+                            (self.leftcounter, self.rightcounter, self.leftstage, self.rightstage) = self.out
+                            # status box
+                            cv2.rectangle(self.img, (0, 0), (250, 73), (245, 117, 16), -1)
+                            cv2.rectangle(self.img, (390, 0), (640, 73), (245, 117, 16), -1)
+
+                            # LEFT REPS
+                            cv2.putText(self.img, 'REPS', (15, 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(self.img, str(self.leftcounter), (10, 60),
+                                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+                            # LEFT STAGE
+                            cv2.putText(self.img, 'STAGE', (85, 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(self.img, str(self.leftstage), (90, 60),
+                                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+
+                            # RIGHT REPS
+                            cv2.putText(self.img, 'REPS', (405, 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(self.img, str(self.rightcounter), (400, 60),
+                                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+                            
+                            # RIGHT STAGE
+                            cv2.putText(self.img, 'STAGE', (475, 12),
+                                cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
+                            cv2.putText(self.img, str(self.rightstage), (480, 60),
+                                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+                            
+                            
+                        if((self.rightcounter >= int(self.gym_several)) and (self.leftcounter >= int(self.gym_several))):
+                            self.gym_several_status = True
+                        else:
+                            self.gym_several_status = False
+                            
+                        if((self.gym_several_status) == True):
+                            if((len(self.gym_item_status) - 1) == self.gym_items_status):
+                                self.gym_items_status = 0#重製項目順序
+                                self.gym_cycle_status = str(int( self.gym_cycle_status) - 1) #做完一個cycle
+                                if(int(self.gym_cycle_status) == 0):
+                                    self.message.set("已完成所有循環，請選擇健身項目繼續下一個訓練。")
+                                    #self.gym_count_time_1 = 0
+                                    pass
+                                else:
+                                    self.gym_count_time_1 = int(self.gym_intervals) + 2 #循環間隔
+                                    self.message.set( self.gym_intervals + "秒後開始下一個循環，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
+                                pass
+                            else:
+                                self.gym_items_status = self.gym_items_status + 1
+                                self.gym_count_time_1 = 7 #項目間隔預設7秒
+                                self.message.set("5秒後開始下一個項目，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
+                                pass
+                            gymMove.clear()#清空
+                            pass
+                        else:
+                            pass
+                        
+                        pass
+                    else:
+                        #self.gym_cycle_status = str(int( self.gym_cycle_status) - 1)
+                        #self.gym_items_status = 0
+                        #self.gym_count_time_1 = -1
+                        #gymMove.clear()
+                        pass
+                    pass
+                else:
+                    pass
         
         else:
             self.message.set("請選擇好訓練項目、設定好參數後，按下""開始訓練""得繼續訓練。")
             pass
-        self.gym_buf_time = self.gym_new_time
+        self.gym_buf_time = int(time.time() - self.gym_start_time)
         #self.message.set(str(self.gym_new_time-self.gym_start_time))
         return
     def Second_trigger(self):
         #測試是不是一秒執行一次用
         #self.message.set(str(self.count))
         #self.count = self.count + 1
+        if(self.gym_count_time_1 == 7):
+            soundwav=pygame.mixer.Sound('sound_5_4_3_2_1.mp3')
+            soundwav.play()
         self.gym_count_time_1 = self.gym_count_time_1 - 1
         
         return
@@ -310,15 +500,15 @@ class MainApplication(tk.Tk):
     def mediapipe_pose(self):
         #mediapipe_pose處裡
         
-        pose_result = self.myPose.process(self.img)
-        if pose_result.pose_landmarks:
+        self.pose_result = self.myPose.process(self.img)
+        if self.pose_result.pose_landmarks:
             self.mpDraw.draw_landmarks(self.img,
-                                  pose_result.pose_landmarks,#點
+                                  self.pose_result.pose_landmarks,#點
                                   self.mpPose.POSE_CONNECTIONS,#連線
                                   self.PoseLmsStyle,#點的Style
                                   self.PoseConStyle#連接線的Style
                                   )
-            for i, lm in enumerate(pose_result.pose_landmarks.landmark):
+            for i, lm in enumerate(self.pose_result.pose_landmarks.landmark):
                 xPos = int(lm.x * self.imgWidth)
                 yPos = int(lm.y * self.imgHeight)
                 #zPos = lm.z
@@ -339,8 +529,7 @@ class MainApplication(tk.Tk):
                                )
                 #print(i, xPos, yPos,zPos)
                 #print("i:{} x:{} y:{} z:{}".format(i,xPos,yPos,zPos))
-        #不曉得為何這樣不行
-        try:
+        '''try:
             landmarks = pose_result.pose_landmarks.landmark
             #self.out = gymMove.curl(landmarks, self.mpPose)
             self.out = (self.gym_items[self.gym_item])(landmarks, self.mpPose)
@@ -374,7 +563,7 @@ class MainApplication(tk.Tk):
             cv2.putText(self.img, 'STAGE', (475, 12),
                 cv2.FONT_HERSHEY_SIMPLEX, 0.5, (0,0,0), 1, cv2.LINE_AA)
             cv2.putText(self.img, str(self.rightstage), (480, 60),
-                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)
+                cv2.FONT_HERSHEY_SIMPLEX, 2, (255, 255, 255), 2, cv2.LINE_AA)'''
         
         # 更改動作偵測
         
@@ -455,15 +644,31 @@ class MainApplication(tk.Tk):
             pass
         return
     def fitness_start(self):
-        self.gym_model = self.selection_model.get()
-        self.gym_item = self.selection_item.get()
-        self.gym_cycle = self.selection_cycle.get()
-        self.gym_several = self.selection_several.get()
-        self.gym_intervals = self.selection_intervals.get()
         if self.captrue.isOpened():
-            self.message.set("您的選擇是 [" + self.gym_model + "][" + self.gym_item + "][循環" + self.gym_cycle + "次][單項" + self.gym_several + "次][循環間隔" + self.gym_intervals + "秒] 在五秒後開始")
+            self.gym_items_status = 0
+            gymMove.clear()
+            
+            self.gym_model = self.selection_model.get()
+            self.gym_item = self.selection_item.get()
+            self.gym_cycle = self.selection_cycle.get()
+            self.gym_several = self.selection_several.get()
+            self.gym_intervals = self.selection_intervals.get()
+            
+            
+            if(self.gym_model == "only one"):
+                self.gym_item_status = list({self.gym_item})
+                #print(self.gym_item_status)
+            elif(self.gym_model == "fitness combo"):
+                self.gym_item_status = list(self.gym_models[self.gym_item])
+                #print(self.gym_item_status)
+            else:
+                pass
+            self.gym_cycle_status = self.gym_cycle
+            self.gym_intervals_status = self.gym_intervals
+            
+            self.message.set("您的選擇是 [" + self.gym_model + "][" + self.gym_item + "][循環" + self.gym_cycle + "次][單項" + self.gym_several + "次][循環間隔" + self.gym_intervals + "秒] 倒數五秒後開始")
             self.gym_start_time = time.time()
-            self.gym_count_time_1 = 5
+            self.gym_count_time_1 = 7
             pass
         else:
             self.message.set("請先開啟攝像頭才可以開始訓練。")
