@@ -343,7 +343,8 @@ class MainApplication(tk.Tk):
         try:
             landmarks = pose_result.pose_landmarks.landmark
             #self.out = gymMove.curl(landmarks, self.mpPose)
-            self.out = (self.gym_items[self.gym_item])(landmarks, self.mpPose)
+            gymMove.update(landmarks, self.mpPose) # update 各個landmarks 後 再進行判斷
+            self.out = (self.gym_items[self.gym_item])() # 這樣副函式可以縮短一些
         except:
             pass
         if self.out != None:
