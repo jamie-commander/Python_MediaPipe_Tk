@@ -28,7 +28,8 @@ with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as 
         # Extract Landmarks
         try:
             landmarks = result.pose_landmarks.landmark
-            out = curl(landmarks, mp_pose)
+            update(landmarks, mp_pose) #update landmarks
+            out = Dumbbell_Shoulder_Press()
         except:
             pass
 
