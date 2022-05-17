@@ -464,7 +464,7 @@ class MainApplication(tk.Tk):
         if self.captrue.isOpened():
             self.message.set("您的選擇是 [" + self.gym_model + "][" + self.gym_item + "][循環" + self.gym_cycle + "次][單項" + self.gym_several + "次][循環間隔" + self.gym_intervals + "秒] 在五秒後開始")
             self.gym_start_time = time.time()
-            self.gym_count_time_1 = 5
+            self.gym_count_time_1 = 6 # jor 改的 (5 -> 6)
             pass
         else:
             self.message.set("請先開啟攝像頭才可以開始訓練。")
