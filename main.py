@@ -1,4 +1,5 @@
 import os
+from pickle import FALSE
 import random
 import json
 import time
@@ -10,7 +11,9 @@ from PIL import  ImageTk, Image, ImageDraw
 import cv2
 from threading import Timer
 import mediapipe as mp
+
 import gymMove
+from hand_detect_ok import hand_angle, hand_pos
 
 import pygame
 pygame.init()
@@ -45,6 +48,10 @@ class MainApplication(tk.Tk):
         self.pose_value = True
         self.s = None
         
+        self.hand_ok_status = False
+        self.hand_ok_time = time.time()
+        self.hand_ok_count = 0
+
         self.count = 0
         #self.gym_model_status = None#暫時用不到
         self.gym_item_status = None
@@ -256,14 +263,51 @@ class MainApplication(tk.Tk):
         #self.leftcounter, self.rightcounter, self.leftstage, self.rightstage
         #round(1.2312, 2)#1.23
         #self.message.set(str(int(self.gym_new_time)))
+
+        hand_status = False
+        if(self.hand_value): # 偵測 ok
+            if self.hand_result.multi_hand_landmarks:
+                for hand_landmarks in self.hand_result.multi_hand_landmarks:
+                    finger_points = []                   # 記錄手指節點座標的串列
+                    for i in hand_landmarks.landmark:
+                        # 將 21 個節點換算成座標，記錄到 finger_points
+                        x = i.x * self.imgWidth
+                        y = i.y * self.imgHeight
+                        finger_points.append((x,y))
+                    if finger_points:
+                        finger_angle = hand_angle(finger_points) # 計算手指角度，回傳長度為 5 的串列
+                        #print(finger_angle)                     # 印出角度 ( 有需要就開啟註解 )
+                        hand_status = hand_pos(finger_angle)     # 取得手勢所回傳的內容
+            if hand_status and self.hand_ok_status == False:
+                self.hand_ok_status = True
+                self.hand_ok_time = time.time()
+            elif hand_status:
+                self.hand_ok_count = time.time() - self.hand_ok_time
+            else:
+                self.hand_ok_status = False
+                self.hand_ok_time = time.time()
+                self.hand_ok_count = 0
+        
+        if self.hand_ok_count >= 3:
+            self.hand_ok_status = False
+            self.fitness_start()        
+            #self.hand_value = False
+            return
+
+        cv2.putText(self.img, str(self.hand_ok_count), (220, 100),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
+        
         if(self.gym_model == "only one" or self.gym_model == "fitness combo"):
             #self.message.set("only one")
             #self.message.set("fitness combo")
             if(self.gym_buf_time != self.gym_new_time):
                 self.Second_trigger()
                 pass
-            
-            if(self.gym_count_time_1 > 0 ):
+            if(self.gym_count_time_1 == 6):
+                cv2.rectangle(self.img, (210, 220), (430, 300), (255, 255, 255), -1)
+                cv2.putText(self.img, "COUNT DOWN", (215, 275),
+                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
+            elif(self.gym_count_time_1 > 0 ):
                 t = ""
                 if(self.gym_count_time_1 < int(self.gym_intervals)):
                     t = str(self.gym_count_time_1)
@@ -469,7 +513,7 @@ class MainApplication(tk.Tk):
         return
     def mediapipe_hand(self):
         #mediapipe_hands處裡
-        
+        #b_img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
         self.hand_result = self.myhands.process(self.img)
         if self.hand_result.multi_hand_landmarks:
             #print(len(self.hand_result.multi_hand_landmarks))
