@@ -54,10 +54,12 @@ def hand_pos(finger_angle):
     f3 = finger_angle[2]   # 中指角度
     f4 = finger_angle[3]   # 無名指角度
     f5 = finger_angle[4]   # 小拇指角度
-
+    
     if f1>=50 and f2>=50 and f3<50 and f4<50 and f5<50:
-        return True
+        return 'ok'
     elif f1<50 and f2>=50 and f3<50 and f4<50 and f5<50:
-        return True
+        return 'ok'
+    elif f1>=50 and f2<50 and f3<50 and f4>=50 and f5>=50:
+        return 'control'
     else:
-        return False
+        return None

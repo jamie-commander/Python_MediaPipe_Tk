@@ -13,7 +13,7 @@ from threading import Timer
 import mediapipe as mp
 
 import gymMove
-from hand_detect_ok import hand_angle, hand_pos
+from hand_detect import hand_angle, hand_pos
 
 import pygame
 pygame.init()
@@ -51,6 +51,11 @@ class MainApplication(tk.Tk):
         self.hand_ok_status = False
         self.hand_ok_time = time.time()
         self.hand_ok_count = 0
+
+        self.hand_control_status = False
+        self.hand_control_xy = (0, 0)
+        self.hand_control_time = time.time()
+        self.hand_control_show_status = 'None'
 
         self.count = 0
         #self.gym_model_status = None#暫時用不到
@@ -264,7 +269,8 @@ class MainApplication(tk.Tk):
         #round(1.2312, 2)#1.23
         #self.message.set(str(int(self.gym_new_time)))
 
-        hand_status = False
+        hand_status = None
+        finger_points = []   
         if(self.hand_value): # 偵測 ok
             if self.hand_result.multi_hand_landmarks:
                 for hand_landmarks in self.hand_result.multi_hand_landmarks:
@@ -276,25 +282,48 @@ class MainApplication(tk.Tk):
                         finger_points.append((x,y))
                     if finger_points:
                         finger_angle = hand_angle(finger_points) # 計算手指角度，回傳長度為 5 的串列
-                        #print(finger_angle)                     # 印出角度 ( 有需要就開啟註解 )
+                        #print(finger_angle)                     # 印出角度 ( 有需要就開啟註解 )76
                         hand_status = hand_pos(finger_angle)     # 取得手勢所回傳的內容
-            if hand_status and self.hand_ok_status == False:
+            if hand_status == 'ok' and self.hand_ok_status == False:
                 self.hand_ok_status = True
                 self.hand_ok_time = time.time()
-            elif hand_status:
+            elif hand_status == 'ok':
                 self.hand_ok_count = time.time() - self.hand_ok_time
             else:
                 self.hand_ok_status = False
                 self.hand_ok_time = time.time()
                 self.hand_ok_count = 0
-        
+            if finger_points != []:
+                x1, y1 = self.hand_control_xy 
+                x2, y2 = finger_points[1]
+                if hand_status == 'control' and self.hand_control_status == False:
+                    self.hand_control_status = True
+                    self.hand_control_xy = tuple(finger_points[1])
+                    self.hand_control_time = time.time()
+                    self.hand_control_show_status = 'get'
+                elif hand_status == 'control' and self.hand_control_show_status != 'get' and self.hand_control_show_status != 'None':
+                    pass
+                elif hand_status == 'control' and self.hand_control_status == True and (abs(x1 - x2) >= 50) and x1 - x2 < 0:
+                    self.hand_control_show_status = 'ToRight'
+                elif hand_status == 'control' and self.hand_control_status == True and (abs(x1 - x2) >= 50) and x1 - x2 > 0:
+                    self.hand_control_show_status = 'ToLeft'
+                elif hand_status == 'control' and self.hand_control_status == True and (abs(y1 - y2) >= 50) and y1 - y2 < 0:
+                    self.hand_control_show_status = 'ToDown'
+                elif hand_status == 'control' and self.hand_control_status == True and (abs(y1 - y2) >= 50) and y1 - y2 > 0:
+                    self.hand_control_show_status = 'ToUp'
+                elif hand_status != 'control':
+                    self.hand_control_status = False
+                    self.hand_control_show_status = 'None'
+
         if self.hand_ok_count >= 3:
             self.hand_ok_status = False
             self.fitness_start()        
             #self.hand_value = False
             return
+        
+        
 
-        cv2.putText(self.img, str(self.hand_ok_count), (220, 100),
+        cv2.putText(self.img, str(self.hand_control_show_status), (500, 100),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
         
         if(self.gym_model == "only one" or self.gym_model == "fitness combo"):
