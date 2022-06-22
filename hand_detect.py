@@ -59,7 +59,7 @@ def hand_pos(finger_angle):
         return 'ok'
     elif f1<50 and f2>=50 and f3<50 and f4<50 and f5<50:
         return 'ok'
-    elif f1>=50 and f2<50 and f3<50 and f4>=50 and f5>=50:
+    elif f2<50 and f3<50:
         return 'control'
     else:
         return None
