@@ -43,6 +43,8 @@ class MainApplication(tk.Tk):
         #開啟照片
         self.img_init = ImageTk.PhotoImage(Image.open('block.jpg'))
         
+        self.Resting = False
+        
         self.pTime = 0 #previous time
         self.cTime = 0 #current time
         self.hand_value = True
@@ -58,7 +60,7 @@ class MainApplication(tk.Tk):
         self.hand_control_time = time.time()
         self.hand_control_show_status = 'None'
         self.hand_control_real_status = 'None'
-
+        
         self.count = 0
         #self.gym_model_status = None#暫時用不到
         self.gym_item_status = None
@@ -558,37 +560,62 @@ class MainApplication(tk.Tk):
         if(self.gym_model == "only one" or self.gym_model == "fitness combo"):
             #self.message.set("only one")
             #self.message.set("fitness combo")
-            if(self.gym_buf_time != self.gym_new_time):
-                self.Second_trigger()
-                pass
-            if(self.gym_count_time_1 == 6):
-                cv2.rectangle(self.img, (210, 220), (430, 300), (255, 255, 255), -1)
-                cv2.putText(self.img, "COUNT DOWN", (215, 275),
-                cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
-            elif(self.gym_count_time_1 > 0 ):
-                t = ""
-                if(self.gym_count_time_1 < int(self.gym_intervals)):
-                    t = str(self.gym_count_time_1)
-                else:
-                    t = str(self.gym_intervals)
-                if(self.gym_count_time_1 > 99):
-                    cv2.rectangle(self.img, (190, 160), (450, 280), (0, 0, 0), -1)
-                    cv2.putText(self.img, t, (200, 260),
-                    cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
-                elif(self.gym_count_time_1 > 9):
-                    cv2.rectangle(self.img, (230, 160), (410, 280), (0, 0, 0), -1)
-                    cv2.putText(self.img, t, (240, 260),
-                    cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
-                else:
-                    cv2.rectangle(self.img, (270, 160), (370, 280), (0, 0, 0), -1)
-                    cv2.putText(self.img, t, (280, 260),
-                    cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
-                self.message.set("鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
-            elif(self.gym_count_time_1 == 0):
-                cv2.rectangle(self.img, (220, 220), (420, 300), (255, 255, 255), -1)
-                cv2.putText(self.img, "START", (230, 280),
-                cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,0), 2, cv2.LINE_AA)
+            if(self.Resting == False):
+                if(self.gym_buf_time != self.gym_new_time):
+                    self.Second_trigger()
+                    pass
+                if(self.gym_count_time_1 == 6):
+                    cv2.rectangle(self.img, (210, 220), (430, 300), (255, 255, 255), -1)
+                    cv2.putText(self.img, "COUNT DOWN", (215, 275),
+                    cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
+                elif(self.gym_count_time_1 > 0 ):
+                    t = ""
+                    if(self.gym_count_time_1 < int(self.gym_intervals)):
+                        t = str(self.gym_count_time_1)
+                    else:
+                        t = str(self.gym_intervals)
+                    if(self.gym_count_time_1 > 99):
+                        cv2.rectangle(self.img, (190, 160), (450, 280), (0, 0, 0), -1)
+                        cv2.putText(self.img, t, (200, 260),
+                        cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+                    elif(self.gym_count_time_1 > 9):
+                        cv2.rectangle(self.img, (230, 160), (410, 280), (0, 0, 0), -1)
+                        cv2.putText(self.img, t, (240, 260),
+                        cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+                    else:
+                        cv2.rectangle(self.img, (270, 160), (370, 280), (0, 0, 0), -1)
+                        cv2.putText(self.img, t, (280, 260),
+                        cv2.FONT_HERSHEY_SIMPLEX, 4, (255,255,255), 4, cv2.LINE_AA)
+                    self.message.set("鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
+                elif(self.gym_count_time_1 == 0):
+                    cv2.rectangle(self.img, (220, 220), (420, 300), (255, 255, 255), -1)
+                    cv2.putText(self.img, "START", (230, 280),
+                    cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,0), 2, cv2.LINE_AA)
             else:
+                if(self.gym_buf_time != self.gym_new_time):
+                    self.Second_trigger2()
+                    pass
+                if(self.gym_count_time_1 >= 0 ):
+                    t = ""
+                    if(self.gym_count_time_1 < int(self.gym_intervals)):
+                        t = "Resting " + str(self.gym_count_time_1)
+                    else:
+                        t = "Resting " + str(self.gym_intervals)
+                    if(self.gym_count_time_1 > 99):
+                        cv2.rectangle(self.img, (125, 220), (515, 300), (0, 0, 0), -1)
+                        cv2.putText(self.img, t, (135, 280),
+                        cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+                    elif(self.gym_count_time_1 > 9):
+                        cv2.rectangle(self.img, (140, 220), (500, 300), (0, 0, 0), -1)
+                        cv2.putText(self.img, t, (150, 280),
+                        cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+                    else:
+                        cv2.rectangle(self.img, (155, 220), (485, 300), (0, 0, 0), -1)
+                        cv2.putText(self.img, t, (160, 280),
+                        cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+                    self.message.set("鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
+                
+            if(self.gym_count_time_1 < 0):
                 if(self.gym_model == "only one"):
                     if(int(self.gym_cycle_status) > 0):
                         try:
@@ -651,9 +678,11 @@ class MainApplication(tk.Tk):
                                 self.hand_value = True
                                 self.pose_value = False
                                 self.message.set("已完成所有循環，請選擇健身項目繼續下一個訓練。")
+                                self.Resting = False
                                 #self.gym_count_time_1 = 0
                                 pass
                             else:
+                                self.Resting = True
                                 self.gym_count_time_1 = int(self.gym_intervals) + 2 #循環間隔
                                 self.message.set( self.gym_intervals + "秒後開始下一個循環，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
                             pass
@@ -730,13 +759,16 @@ class MainApplication(tk.Tk):
                                     self.hand_value = True
                                     self.pose_value = False
                                     self.message.set("已完成所有循環，請選擇健身項目繼續下一個訓練。")
+                                    self.Resting = False
                                     #self.gym_count_time_1 = 0
                                     pass
                                 else:
+                                    self.Resting = True
                                     self.gym_count_time_1 = int(self.gym_intervals) + 2 #循環間隔
                                     self.message.set( self.gym_intervals + "秒後開始下一個循環，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
                                 pass
                             else:
+                                self.Resting = True
                                 self.gym_items_status = self.gym_items_status + 1
                                 self.gym_count_time_1 = 7 #項目間隔預設7秒
                                 self.message.set("5秒後開始下一個項目，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
@@ -764,6 +796,16 @@ class MainApplication(tk.Tk):
         #self.message.set(str(self.gym_new_time-self.gym_start_time))
         return
     def Second_trigger(self):
+        #測試是不是一秒執行一次用
+        #self.message.set(str(self.count))
+        #self.count = self.count + 1
+        if(self.gym_count_time_1 == 7):
+            soundwav=pygame.mixer.Sound('sound_5_4_3_2_1.mp3')
+            soundwav.play()
+        self.gym_count_time_1 = self.gym_count_time_1 - 1
+        
+        return
+    def Second_trigger2(self):
         #測試是不是一秒執行一次用
         #self.message.set(str(self.count))
         #self.count = self.count + 1
@@ -983,7 +1025,7 @@ class MainApplication(tk.Tk):
             self.gym_several = self.selection_several.get()
             self.gym_intervals = self.selection_intervals.get()
             
-            
+            #self.Resting = False
             if(self.gym_model == "only one"):
                 self.gym_item_status = list({self.gym_item})
                 #print(self.gym_item_status)
