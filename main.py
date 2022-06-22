@@ -550,7 +550,26 @@ class MainApplication(tk.Tk):
             self.fitness_start()
             self.hand_ok_count = 0
             #self.hand_value = False
-            return
+            radius = 100
+            center = tuple([int(finger_points[9][0]), int(finger_points[9][1])])
+            axes = (radius, radius)
+            angle = 0
+            startAngle = 0
+            endAngle = 360
+        
+            # http://docs.opencv.org/modules/core/doc/drawing_functions.html#ellipse
+            cv2.ellipse(self.img, center, axes, angle, startAngle, endAngle, (0, 255, 255), -1)
+            
+        elif self.hand_ok_count > 0:
+            radius = 100
+            center = tuple([int(finger_points[9][0]), int(finger_points[9][1])])
+            axes = (radius, radius)
+            angle = 0
+            startAngle = 0
+            endAngle = int(360 * (self.hand_ok_count/3))
+        
+            # http://docs.opencv.org/modules/core/doc/drawing_functions.html#ellipse
+            cv2.ellipse(self.img, center, axes, angle, startAngle, endAngle, (0, 255, 255), -1)
         
         
         cv2.rectangle(self.img, (470, 0), (625, 50), (255,255,255), -1)
