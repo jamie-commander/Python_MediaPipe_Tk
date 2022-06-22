@@ -609,6 +609,10 @@ class MainApplication(tk.Tk):
                         cv2.rectangle(self.img, (140, 220), (500, 300), (0, 0, 0), -1)
                         cv2.putText(self.img, t, (150, 280),
                         cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
+                    elif(self.gym_count_time_1 == 0):
+                        cv2.rectangle(self.img, (155, 220), (485, 300), (0, 0, 0), -1)
+                        cv2.putText(self.img, 'Now', (270, 280),
+                        cv2.FONT_HERSHEY_SIMPLEX, 2, (255,255,255), 2, cv2.LINE_AA)
                     else:
                         cv2.rectangle(self.img, (155, 220), (485, 300), (0, 0, 0), -1)
                         cv2.putText(self.img, t, (160, 280),
@@ -683,7 +687,7 @@ class MainApplication(tk.Tk):
                                 pass
                             else:
                                 self.Resting = True
-                                self.gym_count_time_1 = int(self.gym_intervals) + 2 #循環間隔
+                                self.gym_count_time_1 = int(self.gym_intervals) + 1 #循環間隔
                                 self.message.set( self.gym_intervals + "秒後開始下一個循環，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
                             pass
                         else:
@@ -764,7 +768,7 @@ class MainApplication(tk.Tk):
                                     pass
                                 else:
                                     self.Resting = True
-                                    self.gym_count_time_1 = int(self.gym_intervals) + 2 #循環間隔
+                                    self.gym_count_time_1 = int(self.gym_intervals) + 1 #循環間隔
                                     self.message.set( self.gym_intervals + "秒後開始下一個循環，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
                                 pass
                             else:
@@ -809,8 +813,8 @@ class MainApplication(tk.Tk):
         #測試是不是一秒執行一次用
         #self.message.set(str(self.count))
         #self.count = self.count + 1
-        if(self.gym_count_time_1 == 7):
-            soundwav=pygame.mixer.Sound('sound_5_4_3_2_1.mp3')
+        if(self.gym_count_time_1 == 4):
+            soundwav=pygame.mixer.Sound('sound_3_2_1.mp3')
             soundwav.play()
         self.gym_count_time_1 = self.gym_count_time_1 - 1
         
