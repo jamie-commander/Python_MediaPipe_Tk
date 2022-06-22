@@ -546,6 +546,7 @@ class MainApplication(tk.Tk):
             print(self.gym_count_time_1,self.gym_buf_time,self.gym_new_time)
             self.hand_ok_status = False
             self.fitness_start()
+            self.hand_ok_count = 0
             #self.hand_value = False
             return
         
