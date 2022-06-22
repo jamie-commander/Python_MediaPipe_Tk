@@ -345,15 +345,45 @@ class MainApplication(tk.Tk):
                     print(self.control_x,self.control_y)
                     text = self.control[self.control_x][self.control_y]
                     if(self.control_x == 0):
+                        self.message.set("健身模式：" + text)
                         self.selection_model.set(text)
+                        self.selection_model_label["bg"] = "#FF9797"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 1):
+                        self.message.set("健身項目：" + text)
                         self.selection_item.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FF9797"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 2):
+                        self.message.set("循環次數：" + text)
                         self.selection_cycle.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FF9797"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 3):
+                        self.message.set("單項次數：" + text)
                         self.selection_several.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FF9797"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 4):
+                        self.message.set("循環間隔(秒)：" + text)
                         self.selection_intervals.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FF9797"
                 elif(self.hand_control_show_status == "ToLeft"):
                     if(self.control_x > 0):
                         self.control_x = self.control_x - 1
@@ -361,15 +391,45 @@ class MainApplication(tk.Tk):
                     print(self.control_x,self.control_y)
                     text = self.control[self.control_x][self.control_y]
                     if(self.control_x == 0):
+                        self.message.set("健身模式：" + text)
                         self.selection_model.set(text)
+                        self.selection_model_label["bg"] = "#FF9797"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 1):
+                        self.message.set("健身項目：" + text)
                         self.selection_item.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FF9797"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 2):
+                        self.message.set("循環次數：" + text)
                         self.selection_cycle.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FF9797"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 3):
+                        self.message.set("單項次數：" + text)
                         self.selection_several.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FF9797"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 4):
+                        self.message.set("循環間隔(秒)：" + text)
                         self.selection_intervals.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FF9797"
                         
                 elif(self.hand_control_show_status == "ToDown"):
                     if(self.control_y < len(self.control[self.control_x])-1):
@@ -377,15 +437,45 @@ class MainApplication(tk.Tk):
                     print(self.control_x,self.control_y)
                     text = self.control[self.control_x][self.control_y]
                     if(self.control_x == 0):
+                        self.message.set("健身模式：" + text)
                         self.selection_model.set(text)
+                        self.selection_model_label["bg"] = "#FF9797"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 1):
+                        self.message.set("健身項目：" + text)
                         self.selection_item.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FF9797"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 2):
+                        self.message.set("循環次數：" + text)
                         self.selection_cycle.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FF9797"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 3):
+                        self.message.set("單項次數：" + text)
                         self.selection_several.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FF9797"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 4):
+                        self.message.set("循環間隔(秒)：" + text)
                         self.selection_intervals.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FF9797"
                         
                     if(self.control_x == 0):    
                         self.callbackFunc()
@@ -395,15 +485,45 @@ class MainApplication(tk.Tk):
                     print(self.control_x,self.control_y)
                     text = self.control[self.control_x][self.control_y]
                     if(self.control_x == 0):
+                        self.message.set("健身模式：" + text)
                         self.selection_model.set(text)
+                        self.selection_model_label["bg"] = "#FF9797"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 1):
+                        self.message.set("健身項目：" + text)
                         self.selection_item.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FF9797"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 2):
+                        self.message.set("循環次數：" + text)
                         self.selection_cycle.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FF9797"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 3):
+                        self.message.set("單項次數：" + text)
                         self.selection_several.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FF9797"
+                        self.selection_intervals_label["bg"] = "#FFFFFF"
                     elif(self.control_x == 4):
+                        self.message.set("循環間隔(秒)：" + text)
                         self.selection_intervals.set(text)
+                        self.selection_model_label["bg"] = "#FFFFFF"
+                        self.selection_item_label["bg"] = "#FFFFFF"
+                        self.selection_cycle_label["bg"] = "#FFFFFF"
+                        self.selection_several_label["bg"] = "#FFFFFF"
+                        self.selection_intervals_label["bg"] = "#FF9797"
                         
                     if(self.control_x == 0):    
                         self.callbackFunc()
@@ -579,6 +699,8 @@ class MainApplication(tk.Tk):
                                 self.gym_items_status = 0#重製項目順序
                                 self.gym_cycle_status = str(int( self.gym_cycle_status) - 1) #做完一個cycle
                                 if(int(self.gym_cycle_status) == 0):
+                                    self.control_x = 0
+                                    self.control_y = 0
                                     self.message.set("已完成所有循環，請選擇健身項目繼續下一個訓練。")
                                     #self.gym_count_time_1 = 0
                                     pass
@@ -608,7 +730,7 @@ class MainApplication(tk.Tk):
                     pass
         
         else:
-            self.message.set("請選擇好訓練項目、設定好參數後，按下""開始訓練""得繼續訓練。")
+            #self.message.set("請選擇好訓練項目、設定好參數後，按下""開始訓練""得繼續訓練。")
             pass
         self.gym_buf_time = int(time.time() - self.gym_start_time)
         #self.message.set(str(self.gym_new_time-self.gym_start_time))
@@ -905,12 +1027,12 @@ class MainApplication(tk.Tk):
         
         self.selection_several_label = tk.Label(self.frame3,text = "單項次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
         self.selection_several = tk.ttk.Combobox(self.frame3,values=["3","6","9","12","15","18","21","24","27","30"],width=4,font=('微軟正黑體',12),state="readonly")
-        self.selection_several.set("12")
+        self.selection_several.set("3")
         #self.selection_several.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
         self.selection_intervals_label = tk.Label(self.frame3,text = "循環間隔(秒)",width=12,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
         self.selection_intervals = tk.ttk.Combobox(self.frame3,values=["10","20","30","40","50","60","120","180","240","300"],width=4,font=('微軟正黑體',12),state="readonly")
-        self.selection_intervals.set("30")
+        self.selection_intervals.set("10")
         #self.selection_intervals.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
         #按鈕
