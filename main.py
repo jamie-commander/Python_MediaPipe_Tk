@@ -701,6 +701,11 @@ class MainApplication(tk.Tk):
                                 if(int(self.gym_cycle_status) == 0):
                                     self.control_x = 0
                                     self.control_y = 0
+                                    self.selection_model_label["bg"] = "#FF9797"
+                                    self.selection_item_label["bg"] = "#FFFFFF"
+                                    self.selection_cycle_label["bg"] = "#FFFFFF"
+                                    self.selection_several_label["bg"] = "#FFFFFF"
+                                    self.selection_intervals_label["bg"] = "#FFFFFF"
                                     self.message.set("已完成所有循環，請選擇健身項目繼續下一個訓練。")
                                     #self.gym_count_time_1 = 0
                                     pass
@@ -1009,7 +1014,7 @@ class MainApplication(tk.Tk):
         self.frame3.pack_propagate(0)
         self.frame3.grid(row = 2,column = 0)
         #------------frame3物件------------
-        self.selection_model_label = tk.Label(self.frame3,text = "健身模式",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
+        self.selection_model_label = tk.Label(self.frame3,text = "健身模式",width=8,height=1,bd=1,bg="#FF9797",fg="#000000",font=('微軟正黑體',12,'bold'))
         self.selection_model = tk.ttk.Combobox(self.frame3,values=["only one","fitness combo"],width=12,font=('微軟正黑體',12),state="readonly")
         self.selection_model.set("only one")
         #self.selection_model["values"]= ["1","2"]
