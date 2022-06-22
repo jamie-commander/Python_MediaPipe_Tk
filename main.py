@@ -57,7 +57,6 @@ class MainApplication(tk.Tk):
         self.hand_control_xy = (0, 0)
         self.hand_control_time = time.time()
         self.hand_control_show_status = 'None'
-        self.hand_control_real_status = 'None'
 
         self.count = 0
         #self.gym_model_status = None#暫時用不到
@@ -97,7 +96,7 @@ class MainApplication(tk.Tk):
         self.cycle = ["1", "2","3","4","5","6","7","8","9","10"]
         self.several = ["3","6","9","12","15","18","21","24","27","30"]
         self.intervals = ["10","20","30","40","50","60","120","180","240","300"]
-        self.hand_control_real_status_before = False
+        self.hand_control_show_status_before = False
         #[{self.model},{self.item},{self.cycle},{self.several},{self.intervals}]
         self.control = list()
         self.control.append(self.model)
@@ -316,14 +315,14 @@ class MainApplication(tk.Tk):
                 self.hand_ok_count = 0
             if finger_points != []:
                 x1, y1 = self.hand_control_xy 
-                x1, y1 = int(x1), int(y1)
-                x2, y2 = finger_points[8]
-                x2, y2 = int(x2), int(y2)
+                x2, y2 = finger_points[1]
                 if hand_status == 'control' and self.hand_control_status == False:
                     self.hand_control_status = True
-                    self.hand_control_xy = tuple([x2, y2])
+                    self.hand_control_xy = tuple(finger_points[1])
                     self.hand_control_time = time.time()
                     self.hand_control_show_status = 'get'
+                elif hand_status == 'control' and self.hand_control_show_status != 'get' and self.hand_control_show_status != 'None':
+                    pass
                 elif hand_status == 'control' and self.hand_control_status == True and (abs(x1 - x2) >= 50) and x1 - x2 < 0:
                     self.hand_control_show_status = 'ToRight'
                 elif hand_status == 'control' and self.hand_control_status == True and (abs(x1 - x2) >= 50) and x1 - x2 > 0:
@@ -334,21 +333,12 @@ class MainApplication(tk.Tk):
                     self.hand_control_show_status = 'ToUp'
                 elif hand_status != 'control':
                     self.hand_control_status = False
-                    self.hand_control_real_status = self.hand_control_show_status
                     self.hand_control_show_status = 'None'
-            
-            if hand_status == 'control' and self.hand_control_show_status != 'get':
-                cv2.circle(self.img, self.hand_control_xy, 20, (255, 0, 0), -1)
-                cv2.line(self.img, self.hand_control_xy, (x2, y2), 1, 4)
-                cv2.circle(self.img, (x2, y2), 20, (255, 0, 0), -1)
-            elif self.hand_control_show_status == 'get':
-                cv2.circle(self.img, self.hand_control_xy, 20, (255, 0, 0), -1)
-            
-
-            if(self.hand_control_real_status != self.hand_control_real_status_before):
+                    
+            if((self.hand_control_show_status != self.hand_control_show_status_before) and self.hand_control_show_status_before == "get"):
                 #self.control_x = 0
                 #self.control_y = 0
-                if(self.hand_control_real_status == "ToRight"):
+                if(self.hand_control_show_status == "ToRight"):
                     if(self.control_x < 4):
                         self.control_x = self.control_x + 1
                     self.control_y = 0
@@ -394,7 +384,7 @@ class MainApplication(tk.Tk):
                         self.selection_cycle_label["bg"] = "#FFFFFF"
                         self.selection_several_label["bg"] = "#FFFFFF"
                         self.selection_intervals_label["bg"] = "#FF9797"
-                elif(self.hand_control_real_status == "ToLeft"):
+                elif(self.hand_control_show_status == "ToLeft"):
                     if(self.control_x > 0):
                         self.control_x = self.control_x - 1
                     self.control_y = 0
@@ -441,7 +431,7 @@ class MainApplication(tk.Tk):
                         self.selection_several_label["bg"] = "#FFFFFF"
                         self.selection_intervals_label["bg"] = "#FF9797"
                         
-                elif(self.hand_control_real_status == "ToDown"):
+                elif(self.hand_control_show_status == "ToDown"):
                     if(self.control_y < len(self.control[self.control_x])-1):
                         self.control_y = self.control_y + 1
                     print(self.control_x,self.control_y)
@@ -489,7 +479,7 @@ class MainApplication(tk.Tk):
                         
                     if(self.control_x == 0):    
                         self.callbackFunc()
-                elif(self.hand_control_real_status == "ToUp"):
+                elif(self.hand_control_show_status == "ToUp"):
                     if(self.control_y > 0):
                         self.control_y = self.control_y - 1
                     print(self.control_x,self.control_y)
@@ -540,7 +530,7 @@ class MainApplication(tk.Tk):
                 else:
                     pass
                 pass
-            self.hand_control_real_status_before = self.hand_control_real_status
+            self.hand_control_show_status_before = self.hand_control_show_status
             
         if self.hand_ok_count >= 3:
             self.hand_ok_status = False
@@ -549,8 +539,8 @@ class MainApplication(tk.Tk):
             return
         
         
-        cv2.rectangle(self.img, (470, 0), (625, 50), (255,255,255), -1)
-        cv2.putText(self.img, str(self.hand_control_show_status), (490, 30),
+
+        cv2.putText(self.img, str(self.hand_control_show_status), (500, 100),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
         
         if(self.gym_model == "only one" or self.gym_model == "fitness combo"):
