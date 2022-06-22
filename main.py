@@ -220,8 +220,8 @@ class MainApplication(tk.Tk):
             self.video1.config(image=self.img_original)
             
             #取得圖片高度寬度
-            self.imgHeight = self.img.shape[0] * 1.5
-            self.imgWidth = self.img.shape[1] * 1.5
+            self.imgHeight = self.img.shape[0]
+            self.imgWidth = self.img.shape[1]
             #---------------mediapipe_hand處裡--------------------
             if(self.hand_value):
                 self.mediapipe_hand() #每個點的x、y、z資訊都在 self.hand_result
