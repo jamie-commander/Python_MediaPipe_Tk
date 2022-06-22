@@ -41,7 +41,8 @@ class MainApplication(tk.Tk):
         self.img_video = r'.\resource\screen.jpg'
         self.img_video_process = r'.\resource\screen_process.jpg'
         #開啟照片
-        self.img_init= ImageTk.PhotoImage(Image.open('block.jpg'))
+        self.img_init = ImageTk.PhotoImage(Image.open('block.jpg'))
+        
         self.pTime = 0 #previous time
         self.cTime = 0 #current time
         self.hand_value = True
@@ -156,10 +157,10 @@ class MainApplication(tk.Tk):
         screenwidth = self.winfo_screenwidth()#取得作業系統視窗寬度
         screenheight = self.winfo_screenheight()#取得作業系統視窗高度
         #size = '%dx%d+%d+%d' % (screenwidth * 0.9, screenheight * 0.9, (screenwidth * (1 - 0.9) )/2, (screenheight * (1 - 0.9))/3)
-        size = '%dx%d+%d+%d' % (1280, 900, (screenwidth-1280)/2, (screenheight-900)/2)
+        size = '%dx%d+%d+%d' % (1920, 1000, 0, 0)
         self.geometry(size)#TK視窗大小
-        self.maxsize(1280, 900)#TK視窗最大大小
-        self.minsize(1280, 900)#TK視窗最小大小
+        self.maxsize(1920, 1000)#TK視窗最大大小
+        self.minsize(1920, 1000)#TK視窗最小大小
         #--------------------------------------------------
         #------------------觸發刷新函式-------------------
         #Updata_Start=Timer(0.5,self.TK_updata,[])#thread
@@ -199,7 +200,6 @@ class MainApplication(tk.Tk):
         if(self.ret):
             
             self.img = cv2.flip(self.img, 1) #
-            
             #cv2.imwrite(self.img_video,self.img) #儲存最原始圖片
             
             #self.imgRGB = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)
@@ -214,7 +214,8 @@ class MainApplication(tk.Tk):
             self.img = cv2.cvtColor(self.img, cv2.COLOR_BGR2RGB)#轉RGB
             self.img.flags.writeable = False
             
-            self.img_original = Image.fromarray(self.img)
+            self.img_original = cv2.resize(self.img,(960,720))
+            self.img_original = Image.fromarray(self.img_original)
             self.img_original = ImageTk.PhotoImage(image = self.img_original)
             self.video1.config(image=self.img_original)
             
@@ -239,6 +240,7 @@ class MainApplication(tk.Tk):
                         3)
             
             self.time_updata()
+            self.img = cv2.resize(self.img,(960,720))
             #--------------處裡完成轉回RGB----------
             # convert color RGB to BGR
             #self.img.flags.writeable = True
@@ -271,6 +273,7 @@ class MainApplication(tk.Tk):
         self.captrue.release() #關閉相機
         if(self.s != None):
             self.video1.after_cancel(self.s) #結束拍照
+        
         self.video1.config(image=self.img_init) #換圖片
         self.video2.config(image=self.img_init) #換圖片
         
@@ -849,15 +852,15 @@ class MainApplication(tk.Tk):
         return
     def TK_object(self):
         #------------frame1----------------
-        self.frame1 = tk.Frame(bg="#00FFFF",width = 1280 ,height = 500  ,bd=0,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame1 = tk.Frame(bg="#00FFFF",width = 1920 ,height = 720  ,bd=0,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame1.pack_propagate(0)
         self.frame1.grid(row = 0,column = 0)
         #用label來放照片video1
-        self.video1_title = tk.Label(self.frame1,width=49,height=1,bg ='gray94',fg='blue',text = '原始影像',font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
-        self.video2_title = tk.Label(self.frame1,width=49,height=1,bg ='gray94',fg='blue',text = '處裡影像',font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
+        self.video1_title = tk.Label(self.frame1,width=48,height=1,bg ='gray94',fg='blue',text = '原始影像',font=('微軟正黑體',24,'bold'),relief=tk.GROOVE)
+        self.video2_title = tk.Label(self.frame1,width=48,height=1,bg ='gray94',fg='blue',text = '處裡影像',font=('微軟正黑體',24,'bold'),relief=tk.GROOVE)
         #self.video3_title = tk.Label(self.frame1,width=49,height=1,bg ='gray94',fg='blue',text = '3D影像',font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
-        self.video1 = tk.Label(self.frame1,width=640,height=480,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
-        self.video2 = tk.Label(self.frame1,width=640,height=480,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
+        self.video1 = tk.Label(self.frame1,width=960,height=720,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
+        self.video2 = tk.Label(self.frame1,width=960,height=720,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
         #self.video3 = tk.Label(self.frame1,width=640,height=480,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
         #frame1物件布局
         self.video1_title.grid(row=0,column=0,padx=0, pady=0)
@@ -867,7 +870,7 @@ class MainApplication(tk.Tk):
         self.video2.grid(row=1,column=1,padx=0, pady=0)
         #self.video3.grid(row=1,column=2,padx=0, pady=0)
         #------------frame2----------------
-        self.frame2 = tk.Frame(bg="#FFFFFF",width = 1270 ,height = 20  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame2 = tk.Frame(bg="#FFFFFF",width = 1270 ,height = 50  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame2.pack_propagate(0)
         self.frame2.grid(row = 1,column = 0)
         #----------對話框label---------------------
@@ -880,7 +883,7 @@ class MainApplication(tk.Tk):
         self.message_label.grid(row=0, column=1, padx=0, pady=0)
         
         #------------frame3----------------
-        self.frame3 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 360  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame3 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 50  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame3.pack_propagate(0)
         self.frame3.grid(row = 2,column = 0)
         #------------frame3物件------------
