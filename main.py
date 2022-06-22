@@ -90,6 +90,22 @@ class MainApplication(tk.Tk):
         self.leftstage = None
         self.rightstage = None
         
+        self.model = ["only one","fitness combo"]
+        self.item = ["二頭肌彎舉", "三頭肌屈伸","反式屈膝捲腹","伏地挺身","單臂划船","深蹲","墊脚","啞鈴側平舉","啞鈴肩推","開合跳","平面支撐"]
+        self.cycle = ["1", "2","3","4","5","6","7","8","9","10"]
+        self.several = ["3","6","9","12","15","18","21","24","27","30"]
+        self.intervals = ["10","20","30","40","50","60","120","180","240","300"]
+        self.hand_control_show_status_before = False
+        #[{self.model},{self.item},{self.cycle},{self.several},{self.intervals}]
+        self.control = list()
+        self.control.append(self.model)
+        self.control.append(self.item)
+        self.control.append(self.cycle)
+        self.control.append(self.several)
+        self.control.append(self.intervals)
+        
+        self.control_x = 0
+        self.control_y = 0
         self.gym_items = {
             "二頭肌彎舉": gymMove.curl,
             "三頭肌屈伸": gymMove.triceps_extension,
@@ -123,6 +139,7 @@ class MainApplication(tk.Tk):
             "肩膀(啞鈴側平舉、啞鈴肩推)":{"啞鈴肩推","啞鈴側平舉"},
             "核心(開合跳、平面支撐)":{"平面支撐","開合跳"},
             }'''
+    
         #self.plank_status = False #平板支撐的狀態
         self.out = None
         self.captrue_init()
@@ -314,7 +331,84 @@ class MainApplication(tk.Tk):
                 elif hand_status != 'control':
                     self.hand_control_status = False
                     self.hand_control_show_status = 'None'
-
+                    
+            if((self.hand_control_show_status != self.hand_control_show_status_before) and self.hand_control_show_status_before == "get"):
+                #self.control_x = 0
+                #self.control_y = 0
+                if(self.hand_control_show_status == "ToRight"):
+                    if(self.control_x < 4):
+                        self.control_x = self.control_x + 1
+                    self.control_y = 0
+                    print(self.control_x,self.control_y)
+                    text = self.control[self.control_x][self.control_y]
+                    if(self.control_x == 0):
+                        self.selection_model.set(text)
+                    elif(self.control_x == 1):
+                        self.selection_item.set(text)
+                    elif(self.control_x == 2):
+                        self.selection_cycle.set(text)
+                    elif(self.control_x == 3):
+                        self.selection_several.set(text)
+                    elif(self.control_x == 4):
+                        self.selection_intervals.set(text)
+                elif(self.hand_control_show_status == "ToLeft"):
+                    if(self.control_x > 0):
+                        self.control_x = self.control_x - 1
+                    self.control_y = 0
+                    print(self.control_x,self.control_y)
+                    text = self.control[self.control_x][self.control_y]
+                    if(self.control_x == 0):
+                        self.selection_model.set(text)
+                    elif(self.control_x == 1):
+                        self.selection_item.set(text)
+                    elif(self.control_x == 2):
+                        self.selection_cycle.set(text)
+                    elif(self.control_x == 3):
+                        self.selection_several.set(text)
+                    elif(self.control_x == 4):
+                        self.selection_intervals.set(text)
+                        
+                elif(self.hand_control_show_status == "ToDown"):
+                    if(self.control_y < len(self.control[self.control_x])-1):
+                        self.control_y = self.control_y + 1
+                    print(self.control_x,self.control_y)
+                    text = self.control[self.control_x][self.control_y]
+                    if(self.control_x == 0):
+                        self.selection_model.set(text)
+                    elif(self.control_x == 1):
+                        self.selection_item.set(text)
+                    elif(self.control_x == 2):
+                        self.selection_cycle.set(text)
+                    elif(self.control_x == 3):
+                        self.selection_several.set(text)
+                    elif(self.control_x == 4):
+                        self.selection_intervals.set(text)
+                        
+                    if(self.control_x == 0):    
+                        self.callbackFunc()
+                elif(self.hand_control_show_status == "ToUp"):
+                    if(self.control_y > 0):
+                        self.control_y = self.control_y - 1
+                    print(self.control_x,self.control_y)
+                    text = self.control[self.control_x][self.control_y]
+                    if(self.control_x == 0):
+                        self.selection_model.set(text)
+                    elif(self.control_x == 1):
+                        self.selection_item.set(text)
+                    elif(self.control_x == 2):
+                        self.selection_cycle.set(text)
+                    elif(self.control_x == 3):
+                        self.selection_several.set(text)
+                    elif(self.control_x == 4):
+                        self.selection_intervals.set(text)
+                        
+                    if(self.control_x == 0):    
+                        self.callbackFunc()
+                else:
+                    pass
+                pass
+            self.hand_control_show_status_before = self.hand_control_show_status
+            
         if self.hand_ok_count >= 3:
             self.hand_ok_status = False
             self.fitness_start()        
@@ -705,20 +799,22 @@ class MainApplication(tk.Tk):
             self.button_pose_text.set("關閉Pose處裡")
             self.pose_value = True
         return
-    def callbackFunc(self,Event):
+    def callbackFunc(self,Event = None):
         #global file,filepath,myfile
         #file=combo.get()
         #print(combo.get())
         #self.focus()
         model = self.selection_model.get()
         if(model=="only one"):
-            item = ["二頭肌彎舉", "三頭肌屈伸","反式屈膝捲腹","伏地挺身","單臂划船","深蹲","墊脚","啞鈴側平舉","啞鈴肩推","開合跳","平面支撐"]
-            self.selection_item["values"] = item
-            self.selection_item.set(item[0])
+            self.item = ["二頭肌彎舉", "三頭肌屈伸","反式屈膝捲腹","伏地挺身","單臂划船","深蹲","墊脚","啞鈴側平舉","啞鈴肩推","開合跳","平面支撐"]
+            self.selection_item["values"] = self.item
+            self.selection_item.set(self.item[0])
+            self.control[1] = self.item
         elif(model == "fitness combo"):
-            item = ["手部(二頭肌彎舉、三頭肌屈伸)","腹部(反式屈膝捲腹、伏地挺身)","背部(單臂划船)","大腿(深蹲)","小腿(墊脚)","肩膀(啞鈴側平舉、啞鈴肩推)","核心(開合跳、平面支撐)"]
-            self.selection_item["values"] = item
-            self.selection_item.set(item[0])
+            self.item = ["手部(二頭肌彎舉、三頭肌屈伸)","腹部(反式屈膝捲腹、伏地挺身)","背部(單臂划船)","大腿(深蹲)","小腿(墊脚)","肩膀(啞鈴側平舉、啞鈴肩推)","核心(開合跳、平面支撐)"]
+            self.selection_item["values"] = self.item
+            self.selection_item.set(self.item[0])
+            self.control[1] = self.item
             pass
         return
     def fitness_start(self):
@@ -795,20 +891,24 @@ class MainApplication(tk.Tk):
         self.selection_model.bind("<<ComboboxSelected>>",self.callbackFunc)
         
         self.selection_item_label = tk.Label(self.frame3,text = "健身項目",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
-        self.selection_item = tk.ttk.Combobox(self.frame3,values=["二頭肌彎舉", "三頭肌屈伸","單臂划船","反式屈膝捲腹","深蹲","墊脚","啞鈴側平舉","啞鈴肩推","開合跳","平面支撐"],width=36,font=('微軟正黑體',12),state="readonly")
+        self.selection_item = tk.ttk.Combobox(self.frame3,values=self.item,width=36,font=('微軟正黑體',12),state="readonly")
         self.selection_item.set(self.gym_item)
+        #self.selection_item.bind("<<ComboboxSelected>>",self.callbackFunc1)
         
         self.selection_cycle_label = tk.Label(self.frame3,text = "循環次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
         self.selection_cycle = tk.ttk.Combobox(self.frame3,values=["1", "2","3","4","5","6","7","8","9","10"],width=4,font=('微軟正黑體',12),state="readonly")
         self.selection_cycle.set("3")
+        #self.selection_cycle.bind("<<ComboboxSelected>>",self.callbackFunc2)
         
         self.selection_several_label = tk.Label(self.frame3,text = "單項次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
         self.selection_several = tk.ttk.Combobox(self.frame3,values=["3","6","9","12","15","18","21","24","27","30"],width=4,font=('微軟正黑體',12),state="readonly")
         self.selection_several.set("12")
+        #self.selection_several.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
         self.selection_intervals_label = tk.Label(self.frame3,text = "循環間隔(秒)",width=12,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
         self.selection_intervals = tk.ttk.Combobox(self.frame3,values=["10","20","30","40","50","60","120","180","240","300"],width=4,font=('微軟正黑體',12),state="readonly")
         self.selection_intervals.set("30")
+        #self.selection_intervals.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
         #按鈕
         self.button_fitness_start = tk.Button(self.frame3,text = '開始訓練',bd=5,height=2,width=12,bg="#000000",fg="#FFFFFF",command =self.fitness_start,font=('微軟正黑體',12,'bold'),relief=tk.GROOVE)
