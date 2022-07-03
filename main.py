@@ -618,7 +618,7 @@ class MainApplication(tk.Tk):
             
             self.ret_example,self.img_example = self.captrue_example.read()
             if(self.ret_example):
-                self.img_example = cv2.flip(self.img_example, 1)
+                #self.img_example = cv2.flip(self.img_example, 1)
                 self.img_example = cv2.cvtColor(self.img_example, cv2.COLOR_BGR2RGB)
                 self.img_original_example = cv2.resize(self.img_example,(960,720))
                 self.img_original_example = Image.fromarray(self.img_original_example)
