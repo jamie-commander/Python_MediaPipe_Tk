@@ -125,6 +125,21 @@ class MainApplication(tk.Tk):
             "開合跳": gymMove.starjump,
             "平面支撐": gymMove.plank,
             }
+        
+        self.gym_items_example = {
+            "二頭肌彎舉": "./test.mp4",
+            "三頭肌屈伸": "./test2.mp4",
+            "反式屈膝捲腹": "./test.mp4",
+            "伏地挺身": "./test2.mp4",
+            "單臂划船": "./test.mp4",
+            "深蹲": "./test2.mp4",
+            "墊脚": "./test.mp4",
+            "啞鈴側平舉": "./test2.mp4",
+            "啞鈴肩推": "./test.mp4",
+            "開合跳": "./test2.mp4",
+            "平面支撐": "./test.mp4",
+            }
+        
         self.gym_models = {
             "手部(二頭肌彎舉、三頭肌屈伸)":{"二頭肌彎舉","三頭肌屈伸"},
             "腹部(反式屈膝捲腹、伏地挺身)":{"反式屈膝捲腹","伏地挺身"},
@@ -177,6 +192,11 @@ class MainApplication(tk.Tk):
         self.mainloop()
         return
     def captrue_init(self):
+        self.captrue_example = cv2.VideoCapture("./test.mp4")
+        
+        
+        
+        
         self.captrue = cv2.VideoCapture(0, cv2.CAP_DSHOW)
         self.captrue.set(cv2.CAP_PROP_FOURCC, cv2.VideoWriter_fourcc('M', 'J', 'P', 'G')) #設置影像參數
         #self.captrue.set(3,350) #像素
@@ -195,6 +215,23 @@ class MainApplication(tk.Tk):
         self.captrue_open()
         return
     def captrue_open(self):
+        '''self.captrue_example = cv2.VideoCapture(self.gym_items_example[self.gym_item_status[self.gym_items_status]])
+        
+        self.ret_example,self.img_example = self.captrue_example.read()
+        if(self.ret_example):
+            self.img_example = cv2.flip(self.img_example, 1)
+            self.img_example = cv2.cvtColor(self.img_example, cv2.COLOR_BGR2RGB)
+            self.img_original_example = cv2.resize(self.img_example,(960,720))
+            self.img_original_example = Image.fromarray(self.img_original_example)
+            self.img_original_example = ImageTk.PhotoImage(image = self.img_original_example)
+            self.video1.config(image=self.img_original_example)
+            if(self.captrue_example.get(cv2.CAP_PROP_POS_FRAMES) == self.captrue_example.get(cv2.CAP_PROP_FRAME_COUNT) - 1 ):
+                self.captrue_example.set(cv2.CAP_PROP_POS_FRAMES,0)
+                #self.captrue_example = cv2.VideoCapture("./test2.mp4")'''
+        
+        
+        
+        #----------------------------------------------------------------------------------------
         self.button_open["state"] = tk.DISABLED
         #【Opencv学习（一）】VideoCapture读数据内存泄漏
         #https://blog.csdn.net/liuhuicsu/article/details/62418054
@@ -220,7 +257,7 @@ class MainApplication(tk.Tk):
             self.img_original = cv2.resize(self.img,(960,720))
             self.img_original = Image.fromarray(self.img_original)
             self.img_original = ImageTk.PhotoImage(image = self.img_original)
-            self.video1.config(image=self.img_original)
+            #self.video1.config(image=self.img_original)
             
             #取得圖片高度寬度
             self.imgHeight = self.img.shape[0]
@@ -577,6 +614,19 @@ class MainApplication(tk.Tk):
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
         
         if(self.gym_model == "only one" or self.gym_model == "fitness combo"):
+            #self.captrue_example = cv2.VideoCapture(self.gym_items_example[self.gym_item_status[self.gym_items_status]])
+            
+            self.ret_example,self.img_example = self.captrue_example.read()
+            if(self.ret_example):
+                self.img_example = cv2.flip(self.img_example, 1)
+                self.img_example = cv2.cvtColor(self.img_example, cv2.COLOR_BGR2RGB)
+                self.img_original_example = cv2.resize(self.img_example,(960,720))
+                self.img_original_example = Image.fromarray(self.img_original_example)
+                self.img_original_example = ImageTk.PhotoImage(image = self.img_original_example)
+                self.video1.config(image=self.img_original_example)
+                if(self.captrue_example.get(cv2.CAP_PROP_POS_FRAMES) == self.captrue_example.get(cv2.CAP_PROP_FRAME_COUNT) - 1 ):
+                    self.captrue_example.set(cv2.CAP_PROP_POS_FRAMES,0)
+                    #self.captrue_example = cv2.VideoCapture("./test2.mp4")
             #self.message.set("only one")
             #self.message.set("fitness combo")
             if(self.Resting == False):
@@ -700,6 +750,7 @@ class MainApplication(tk.Tk):
                                 self.selection_intervals_label["bg"] = "#FFFFFF"
                                 self.hand_value = True
                                 self.pose_value = False
+                                self.captrue_example = cv2.VideoCapture("./test.mp4")
                                 self.message.set("已完成所有循環，請選擇健身項目繼續下一個訓練。")
                                 self.Resting = False
                                 #self.gym_count_time_1 = 0
@@ -707,6 +758,7 @@ class MainApplication(tk.Tk):
                             else:
                                 self.Resting = True
                                 self.gym_count_time_1 = int(self.gym_intervals) + 1 #循環間隔
+                                self.captrue_example = cv2.VideoCapture(self.gym_items_example[self.gym_item_status[self.gym_items_status]])
                                 self.message.set( self.gym_intervals + "秒後開始下一個循環，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
                             pass
                         else:
@@ -781,6 +833,7 @@ class MainApplication(tk.Tk):
                                     self.selection_intervals_label["bg"] = "#FFFFFF"
                                     self.hand_value = True
                                     self.pose_value = False
+                                    self.captrue_example = cv2.VideoCapture("./test.mp4")
                                     self.message.set("已完成所有循環，請選擇健身項目繼續下一個訓練。")
                                     self.Resting = False
                                     #self.gym_count_time_1 = 0
@@ -788,12 +841,14 @@ class MainApplication(tk.Tk):
                                 else:
                                     self.Resting = True
                                     self.gym_count_time_1 = int(self.gym_intervals) + 1 #循環間隔
+                                    self.captrue_example = cv2.VideoCapture(self.gym_items_example[self.gym_item_status[self.gym_items_status]])
                                     self.message.set( self.gym_intervals + "秒後開始下一個循環，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
                                 pass
                             else:
                                 self.Resting = True
                                 self.gym_items_status = self.gym_items_status + 1
                                 self.gym_count_time_1 = 7 #項目間隔預設7秒
+                                self.captrue_example = cv2.VideoCapture(self.gym_items_example[self.gym_item_status[self.gym_items_status]])
                                 self.message.set("5秒後開始下一個項目，下一個鍛鍊項目：" + self.gym_item_status[self.gym_items_status])
                                 pass
                             gymMove.clear()#清空
@@ -823,6 +878,7 @@ class MainApplication(tk.Tk):
         #self.message.set(str(self.count))
         #self.count = self.count + 1
         if(self.gym_count_time_1 == 7):
+            #self.captrue_example = cv2.VideoCapture(self.gym_items_example[self.gym_item_status[self.gym_items_status]])
             soundwav=pygame.mixer.Sound('sound_5_4_3_2_1.mp3')
             soundwav.play()
         self.gym_count_time_1 = self.gym_count_time_1 - 1
@@ -833,6 +889,7 @@ class MainApplication(tk.Tk):
         #self.message.set(str(self.count))
         #self.count = self.count + 1
         if(self.gym_count_time_1 == 4):
+            #self.captrue_example = cv2.VideoCapture(self.gym_items_example[self.gym_item_status[self.gym_items_status]])
             soundwav=pygame.mixer.Sound('sound_3_2_1.mp3')
             soundwav.play()
         self.gym_count_time_1 = self.gym_count_time_1 - 1
@@ -1061,6 +1118,9 @@ class MainApplication(tk.Tk):
             self.gym_intervals_status = self.gym_intervals
             
             self.message.set("您的選擇是 [" + self.gym_model + "][" + self.gym_item + "][循環" + self.gym_cycle + "次][單項" + self.gym_several + "次][循環間隔" + self.gym_intervals + "秒] 倒數五秒後開始")
+            
+            self.captrue_example = cv2.VideoCapture(self.gym_items_example[self.gym_item_status[self.gym_items_status]])
+            
             self.gym_start_time = time.time()
             self.gym_count_time_1 = 7
             pass
@@ -1073,7 +1133,7 @@ class MainApplication(tk.Tk):
         self.frame1.pack_propagate(0)
         self.frame1.grid(row = 0,column = 0)
         #用label來放照片video1
-        self.video1_title = tk.Label(self.frame1,width=48,height=1,bg ='gray94',fg='blue',text = '原始影像',font=('微軟正黑體',24,'bold'),relief=tk.GROOVE)
+        self.video1_title = tk.Label(self.frame1,width=48,height=1,bg ='gray94',fg='blue',text = '示範影像',font=('微軟正黑體',24,'bold'),relief=tk.GROOVE)
         self.video2_title = tk.Label(self.frame1,width=48,height=1,bg ='gray94',fg='blue',text = '處裡影像',font=('微軟正黑體',24,'bold'),relief=tk.GROOVE)
         #self.video3_title = tk.Label(self.frame1,width=49,height=1,bg ='gray94',fg='blue',text = '3D影像',font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
         self.video1 = tk.Label(self.frame1,width=960,height=720,bg ='gray94',fg='blue',image = self.img_init,relief=tk.GROOVE)
