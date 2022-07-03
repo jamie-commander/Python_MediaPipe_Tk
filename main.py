@@ -96,9 +96,9 @@ class MainApplication(tk.Tk):
         
         self.model = ["only one","fitness combo"]
         self.item = ["二頭肌彎舉", "三頭肌屈伸","反式屈膝捲腹","伏地挺身","單臂划船","深蹲","墊脚","啞鈴側平舉","啞鈴肩推","開合跳","平面支撐"]
-        self.cycle = ["1", "2","3","4","5","6","7","8","9","10"]
-        self.several = ["3","6","9","12","15","18","21","24","27","30"]
-        self.intervals = ["10","20","30","40","50","60","120","180","240","300"]
+        self.cycle = list(str(i) for i in range(2, 6))
+        self.several = ["6","8","10","12","15","20","24","30"]
+        self.intervals = [str(i) for i in range(1, 11)] + ['15', '30']
         
         self.hand_control_real_status_before = False
         #[{self.model},{self.item},{self.cycle},{self.several},{self.intervals}]
@@ -111,7 +111,7 @@ class MainApplication(tk.Tk):
         
         self.control_x = 0
         #self.control_y = 0
-        self.control_value = [0,0,0,0,0]
+        self.control_value = [0,0,0,0,4]
         self.gym_items = {
             "二頭肌彎舉": gymMove.curl,
             "三頭肌屈伸": gymMove.triceps_extension,
@@ -1171,7 +1171,7 @@ class MainApplication(tk.Tk):
         self.frame3.grid(row = 2,column = 0)
         #------------frame3物件------------
         self.selection_model_label = tk.Label(self.frame3,text = "健身模式",width=8,height=1,bd=1,bg="#FF9797",fg="#000000",font=('微軟正黑體',20,'bold'))
-        self.selection_model = tk.ttk.Combobox(self.frame3,values=self.model,width=12,font=('微軟正黑體',20),state="readonly")
+        self.selection_model = tk.ttk.Combobox(self.frame3,values=["only one","fitness combo"],width=12,font=('微軟正黑體',20),state="readonly")
         self.selection_model.set("only one")
         #self.selection_model["values"]= ["1","2"]
         self.selection_model.bind("<<ComboboxSelected>>",self.callbackFunc)
@@ -1189,7 +1189,7 @@ class MainApplication(tk.Tk):
         self.selection_several_label = tk.Label(self.frame3,text = "單項次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
         self.selection_several = tk.ttk.Combobox(self.frame3,values=self.several,width=4,font=('微軟正黑體',20),state="readonly")
         self.selection_several.set("6")
-        #self.selection_several.bind("<<ComboboxSelected>>",self.callbackFunc2)
+        #self.selection_several.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
         self.selection_intervals_label = tk.Label(self.frame3,text = "循環間隔(秒)",width=12,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
         self.selection_intervals = tk.ttk.Combobox(self.frame3,values=self.intervals,width=4,font=('微軟正黑體',20),state="readonly")
