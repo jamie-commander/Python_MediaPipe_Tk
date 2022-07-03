@@ -99,6 +99,7 @@ class MainApplication(tk.Tk):
         self.cycle = ["1", "2","3","4","5","6","7","8","9","10"]
         self.several = ["3","6","9","12","15","18","21","24","27","30"]
         self.intervals = ["10","20","30","40","50","60","120","180","240","300"]
+        
         self.hand_control_real_status_before = False
         #[{self.model},{self.item},{self.cycle},{self.several},{self.intervals}]
         self.control = list()
@@ -109,7 +110,8 @@ class MainApplication(tk.Tk):
         self.control.append(self.intervals)
         
         self.control_x = 0
-        self.control_y = 0
+        #self.control_y = 0
+        self.control_value = [0,0,0,0,0]
         self.gym_items = {
             "二頭肌彎舉": gymMove.curl,
             "三頭肌屈伸": gymMove.triceps_extension,
@@ -390,7 +392,8 @@ class MainApplication(tk.Tk):
                 if(self.hand_control_real_status == "ToRight"):
                     if(self.control_x < 4):
                         self.control_x = self.control_x + 1
-                    self.control_y = 0
+                    #self.control_y = 0
+                    self.control_y = self.control_value[self.control_x]
                     #print(self.control_x,self.control_y)
                     text = self.control[self.control_x][self.control_y]
                     if(self.control_x == 0):
@@ -436,7 +439,8 @@ class MainApplication(tk.Tk):
                 elif(self.hand_control_real_status == "ToLeft"):
                     if(self.control_x > 0):
                         self.control_x = self.control_x - 1
-                    self.control_y = 0
+                    #self.control_y = 0
+                    self.control_y = self.control_value[self.control_x]
                     #print(self.control_x,self.control_y)
                     text = self.control[self.control_x][self.control_y]
                     if(self.control_x == 0):
@@ -483,6 +487,7 @@ class MainApplication(tk.Tk):
                 elif(self.hand_control_real_status == "ToDown"):
                     if(self.control_y < len(self.control[self.control_x])-1):
                         self.control_y = self.control_y + 1
+                    self.control_value[self.control_x] = self.control_y
                     #print(self.control_x,self.control_y)
                     text = self.control[self.control_x][self.control_y]
                     if(self.control_x == 0):
@@ -531,6 +536,7 @@ class MainApplication(tk.Tk):
                 elif(self.hand_control_real_status == "ToUp"):
                     if(self.control_y > 0):
                         self.control_y = self.control_y - 1
+                    self.control_value[self.control_x] = self.control_y
                     #print(self.control_x,self.control_y)
                     text = self.control[self.control_x][self.control_y]
                     if(self.control_x == 0):
