@@ -1183,12 +1183,12 @@ class MainApplication(tk.Tk):
         
         self.selection_cycle_label = tk.Label(self.frame3,text = "循環次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
         self.selection_cycle = tk.ttk.Combobox(self.frame3,values=["1", "2","3","4","5","6","7","8","9","10"],width=4,font=('微軟正黑體',20),state="readonly")
-        self.selection_cycle.set("3")
+        self.selection_cycle.set("2")
         #self.selection_cycle.bind("<<ComboboxSelected>>",self.callbackFunc2)
         
         self.selection_several_label = tk.Label(self.frame3,text = "單項次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
         self.selection_several = tk.ttk.Combobox(self.frame3,values=["3","6","9","12","15","18","21","24","27","30"],width=4,font=('微軟正黑體',20),state="readonly")
-        self.selection_several.set("3")
+        self.selection_several.set("6")
         #self.selection_several.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
         self.selection_intervals_label = tk.Label(self.frame3,text = "循環間隔(秒)",width=12,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
