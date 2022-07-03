@@ -1195,7 +1195,7 @@ class MainApplication(tk.Tk):
         
         self.selection_intervals_label = tk.Label(self.frame3,text = "循環間隔(秒)",width=12,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
         self.selection_intervals = tk.ttk.Combobox(self.frame3,values=list(range(1, 11)) + ['15', '30'],width=4,font=('微軟正黑體',20),state="readonly")
-        self.selection_intervals.set("10")
+        self.selection_intervals.set("5")
         #self.selection_intervals.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
         #按鈕
