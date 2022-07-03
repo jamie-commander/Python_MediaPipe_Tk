@@ -1147,51 +1147,51 @@ class MainApplication(tk.Tk):
         self.video2.grid(row=1,column=1,padx=0, pady=0)
         #self.video3.grid(row=1,column=2,padx=0, pady=0)
         #------------frame2----------------
-        self.frame2 = tk.Frame(bg="#FFFFFF",width = 1270 ,height = 50  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame2 = tk.Frame(bg="#FFFFFF",width = 1920 ,height = 50  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame2.pack_propagate(0)
         self.frame2.grid(row = 1,column = 0)
         #----------對話框label---------------------
         self.message_title_label = tk.Label(self.frame2,text = "即時訊息：",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',16,'bold'))
         self.message = tk.StringVar()
         self.message.set("歡迎使用居家健身輔助軟體，請先開啟攝像頭得繼續操作。")
-        self.message_label = tk.Label(self.frame2,textvariable = self.message,width=89,height=1,bd=1,bg="#FFFFFF",fg="#000000",anchor=tk.W,font=('微軟正黑體',16,'bold'))
+        self.message_label = tk.Label(self.frame2,textvariable = self.message,width=138,height=1,bd=1,bg="#FFFFFF",fg="#000000",anchor=tk.W,font=('微軟正黑體',16,'bold'))
         #frame2物件布局
         self.message_title_label.grid(row=0, column=0, padx=0, pady=0)
         self.message_label.grid(row=0, column=1, padx=0, pady=0)
         
         #------------frame3----------------
-        self.frame3 = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 50  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.frame3 = tk.Frame(bg="#FFFFFF",width = 1920 ,height = 50  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
         self.frame3.pack_propagate(0)
         self.frame3.grid(row = 2,column = 0)
         #------------frame3物件------------
-        self.selection_model_label = tk.Label(self.frame3,text = "健身模式",width=8,height=1,bd=1,bg="#FF9797",fg="#000000",font=('微軟正黑體',12,'bold'))
-        self.selection_model = tk.ttk.Combobox(self.frame3,values=["only one","fitness combo"],width=12,font=('微軟正黑體',12),state="readonly")
+        self.selection_model_label = tk.Label(self.frame3,text = "健身模式",width=8,height=1,bd=1,bg="#FF9797",fg="#000000",font=('微軟正黑體',20,'bold'))
+        self.selection_model = tk.ttk.Combobox(self.frame3,values=["only one","fitness combo"],width=12,font=('微軟正黑體',20),state="readonly")
         self.selection_model.set("only one")
         #self.selection_model["values"]= ["1","2"]
         self.selection_model.bind("<<ComboboxSelected>>",self.callbackFunc)
         
-        self.selection_item_label = tk.Label(self.frame3,text = "健身項目",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
-        self.selection_item = tk.ttk.Combobox(self.frame3,values=self.item,width=36,font=('微軟正黑體',12),state="readonly")
+        self.selection_item_label = tk.Label(self.frame3,text = "健身項目",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
+        self.selection_item = tk.ttk.Combobox(self.frame3,values=self.item,width=28,font=('微軟正黑體',20),state="readonly")
         self.selection_item.set(self.gym_item)
         #self.selection_item.bind("<<ComboboxSelected>>",self.callbackFunc1)
         
-        self.selection_cycle_label = tk.Label(self.frame3,text = "循環次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
-        self.selection_cycle = tk.ttk.Combobox(self.frame3,values=["1", "2","3","4","5","6","7","8","9","10"],width=4,font=('微軟正黑體',12),state="readonly")
+        self.selection_cycle_label = tk.Label(self.frame3,text = "循環次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
+        self.selection_cycle = tk.ttk.Combobox(self.frame3,values=["1", "2","3","4","5","6","7","8","9","10"],width=4,font=('微軟正黑體',20),state="readonly")
         self.selection_cycle.set("3")
         #self.selection_cycle.bind("<<ComboboxSelected>>",self.callbackFunc2)
         
-        self.selection_several_label = tk.Label(self.frame3,text = "單項次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
-        self.selection_several = tk.ttk.Combobox(self.frame3,values=["3","6","9","12","15","18","21","24","27","30"],width=4,font=('微軟正黑體',12),state="readonly")
+        self.selection_several_label = tk.Label(self.frame3,text = "單項次數",width=8,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
+        self.selection_several = tk.ttk.Combobox(self.frame3,values=["3","6","9","12","15","18","21","24","27","30"],width=4,font=('微軟正黑體',20),state="readonly")
         self.selection_several.set("3")
         #self.selection_several.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
-        self.selection_intervals_label = tk.Label(self.frame3,text = "循環間隔(秒)",width=12,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',12,'bold'))
-        self.selection_intervals = tk.ttk.Combobox(self.frame3,values=["10","20","30","40","50","60","120","180","240","300"],width=4,font=('微軟正黑體',12),state="readonly")
+        self.selection_intervals_label = tk.Label(self.frame3,text = "循環間隔(秒)",width=12,height=1,bd=1,bg="#FFFFFF",fg="#000000",font=('微軟正黑體',20,'bold'))
+        self.selection_intervals = tk.ttk.Combobox(self.frame3,values=["10","20","30","40","50","60","120","180","240","300"],width=4,font=('微軟正黑體',20),state="readonly")
         self.selection_intervals.set("10")
         #self.selection_intervals.bind("<<ComboboxSelected>>",self.callbackFunc3)
         
         #按鈕
-        self.button_fitness_start = tk.Button(self.frame3,text = '開始訓練',bd=5,height=2,width=12,bg="#000000",fg="#FFFFFF",command =self.fitness_start,font=('微軟正黑體',12,'bold'),relief=tk.GROOVE)
+        self.button_fitness_start = tk.Button(self.frame3,text = '開始訓練',bd=5,height=2,width=12,bg="#000000",fg="#FFFFFF",command =self.fitness_start,font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
         
         #self.selection_item["values"]= ["1","2"]
         #self.selection_item.bind("<<ComboboxSelected>>",self.callbackFunc)
@@ -1215,18 +1215,18 @@ class MainApplication(tk.Tk):
         #------------frame4物件------------
         #frame4物件布局
         #按鈕
-        self.button_open = tk.Button(self.frame4,text = '開啟網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_check,font=('微軟正黑體',16,'bold'))
-        self.button_close = tk.Button(self.frame4,text = '關閉網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_close,font=('微軟正黑體',16,'bold'))
+        self.button_open = tk.Button(self.frame4,text = '開啟網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_check,font=('微軟正黑體',12,'bold'))
+        self.button_close = tk.Button(self.frame4,text = '關閉網路攝像頭',bd=5,height=2,width=12,bg ='gray94',command =self.captrue_close,font=('微軟正黑體',12,'bold'))
         self.button_hand_text = tk.StringVar()
         self.button_hand_text.set('關閉Hand處裡')
-        self.button_hand = tk.Button(self.frame4,textvariable = self.button_hand_text,bd=5,height=2,width=12,bg ='gray94',command =self.hand_on_off,font=('微軟正黑體',16,'bold'))
+        self.button_hand = tk.Button(self.frame4,textvariable = self.button_hand_text,bd=5,height=2,width=12,bg ='gray94',command =self.hand_on_off,font=('微軟正黑體',12,'bold'))
         self.button_pose_text = tk.StringVar()
         self.button_pose_text.set('關閉Pose處裡')
-        self.button_pose = tk.Button(self.frame4,textvariable = self.button_pose_text,bd=5,height=2,width=12,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',16,'bold'))
+        self.button_pose = tk.Button(self.frame4,textvariable = self.button_pose_text,bd=5,height=2,width=12,bg ='gray94',command =self.pose_on_off,font=('微軟正黑體',12,'bold'))
         
         self.button_closeTK_text = tk.StringVar()
         self.button_closeTK_text.set('關閉程式')
-        self.button_closeTK = tk.Button(self.frame4,textvariable = self.button_closeTK_text,bd=5,height=2,width=12,bg ='gray94',command =self.TK_closing,font=('微軟正黑體',16,'bold'))
+        self.button_closeTK = tk.Button(self.frame4,textvariable = self.button_closeTK_text,bd=5,height=2,width=12,bg ='gray94',command =self.TK_closing,font=('微軟正黑體',12,'bold'))
         
         #self.label_plank_text = tk.StringVar()
         #self.label_plank_text.set('平板支撐狀態:{}'.format(self.plank_status))
