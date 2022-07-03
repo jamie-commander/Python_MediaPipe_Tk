@@ -60,7 +60,8 @@ class MainApplication(tk.Tk):
         self.hand_control_time = time.time()
         self.hand_control_show_status = 'None'
         self.hand_control_real_status = 'None'
-        
+        self.hand_flag = False
+
         self.count = 0
         #self.gym_model_status = None#暫時用不到
         self.gym_item_status = None
@@ -98,7 +99,7 @@ class MainApplication(tk.Tk):
         self.item = ["二頭肌彎舉", "三頭肌屈伸","反式屈膝捲腹","伏地挺身","單臂划船","深蹲","墊脚","啞鈴側平舉","啞鈴肩推","開合跳","平面支撐"]
         self.cycle = list(str(i) for i in range(2, 6))
         self.several = ["6","8","10","12","15","20","24","30"]
-        self.intervals = [str(i) for i in range(1, 11)] + ['15', '30']
+        self.intervals = [str(i) for i in range(3, 11)] + ['15', '30']
         
         self.hand_control_real_status_before = False
         #[{self.model},{self.item},{self.cycle},{self.several},{self.intervals}]
@@ -355,7 +356,9 @@ class MainApplication(tk.Tk):
                 self.hand_ok_status = False
                 self.hand_ok_time = time.time()
                 self.hand_ok_count = 0
-            if finger_points != []:
+            if self.hand_flag == True:
+                self.hand_flag = False
+            elif finger_points != []:
                 x1, y1 = self.hand_control_xy 
                 x1, y1 = int(x1), int(y1)
                 x2, y2 = finger_points[8]
@@ -747,6 +750,7 @@ class MainApplication(tk.Tk):
                             self.gym_cycle_status = str(int( self.gym_cycle_status) - 1) #做完一個cycle
                             gymMove.clear()#清空
                             if(int(self.gym_cycle_status) == 0):
+                                self.hand_flag = True
                                 self.control_x = 0
                                 self.control_y = 0
                                 self.selection_model_label["bg"] = "#FF9797"
