@@ -127,17 +127,17 @@ class MainApplication(tk.Tk):
             }
         
         self.gym_items_example = {
-            "二頭肌彎舉": "./test.mp4",
-            "三頭肌屈伸": "./test2.mp4",
-            "反式屈膝捲腹": "./test.mp4",
-            "伏地挺身": "./test2.mp4",
-            "單臂划船": "./test.mp4",
-            "深蹲": "./test2.mp4",
-            "墊脚": "./test.mp4",
-            "啞鈴側平舉": "./test2.mp4",
-            "啞鈴肩推": "./test.mp4",
-            "開合跳": "./test2.mp4",
-            "平面支撐": "./test.mp4",
+            "二頭肌彎舉": "./DemoVideo/1.mp4",
+            "三頭肌屈伸": "./DemoVideo/2.mp4",
+            "反式屈膝捲腹": "./DemoVideo/3.mp4",
+            "伏地挺身": "./DemoVideo/4.mp4",
+            "單臂划船": "./DemoVideo/5.mp4",
+            "深蹲": "./DemoVideo/6.mp4",
+            "墊脚": "./DemoVideo/7.mp4",
+            "啞鈴側平舉": "./DemoVideo/8.mp4",
+            "啞鈴肩推": "./DemoVideo/9.mp4",
+            "開合跳": "./DemoVideo/10.mp4",
+            "平面支撐": "./DemoVideo/11.mp4",
             }
         
         self.gym_models = {
