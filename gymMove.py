@@ -1,5 +1,3 @@
-from glob import glob
-from turtle import left
 import numpy as np
 import time
 
