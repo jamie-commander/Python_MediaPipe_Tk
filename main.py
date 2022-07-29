@@ -9,6 +9,7 @@ import os
 import sys
 import time
 import pygame
+import json
 
 import gymMove
 from hand_detect import hand_angle, hand_pos
@@ -19,6 +20,7 @@ imgpath = os.path.join(filepath, 'img')
 videopath = os.path.join(filepath, 'video')
 soundpath = os.path.join(filepath, 'sound')
 videoDEMOpath = os.path.join(filepath, 'videoDEMO')
+datapath = os.path.join(filepath,"data")
 
 class STATUS:
     MENU = 0
@@ -30,7 +32,20 @@ class MainApplication(tk.Tk):
     def __init__(self):
         super().__init__()
         self.img_init = ImageTk.PhotoImage(Image.open(os.path.join(imgpath, 'block.jpg')))
-
+        
+        
+        self.data = dict()
+        try:
+            with open(os.path.join(datapath,"account.json"),'r') as f:
+                self.data =json.load(f)
+        except:
+            #print("data尚未擁有任何資料")
+            with open(os.path.join(datapath,"account.json"),"w") as f:
+                json.dump(self.data,f)
+        
+        
+        self.LOGIN_status = False
+        
         # mediapipe hand and pose's status
         self.hand_value = True
         self.pose_value = False
@@ -228,7 +243,7 @@ class MainApplication(tk.Tk):
         #--------------------------------------------------
         self.protocol("WM_DELETE_WINDOW", self.TK_closing)#當視窗關閉時觸發
         self.mainloop()
-
+    
     def TK_object(self):
         #------------frame1----------------
         self.frame1 = tk.Frame(bg="#00FFFF",width = 1920 ,height = 720  ,bd=0,relief=tk.GROOVE) # FLAT SUNKEN RAISED GROOVE RIDGE
@@ -319,13 +334,197 @@ class MainApplication(tk.Tk):
         self.button_closeTK_text.set('關閉程式')
         self.button_closeTK = tk.Button(self.frame4,textvariable = self.button_closeTK_text,bd=5,height=2,width=12,bg ='gray94',command =self.TK_closing,font=('微軟正黑體',12,'bold'))
 
+        self.button_logout = tk.StringVar()
+        self.button_logout.set('登出')
+        self.button_logout = tk.Button(self.frame4,textvariable = self.button_logout,bd=5,height=2,width=6,bg ='gray94',command =self.LOGOUT,font=('微軟正黑體',12,'bold'))
+        
         # frame4物件布局
         self.button_open.grid(row=0, column=0, padx=0, pady=0)
         self.button_close.grid(row=0, column=1, padx=0, pady=0)
         self.button_hand.grid(row=0, column=2, padx=0, pady=0)
         self.button_pose.grid(row=0, column=3, padx=0, pady=0)
         self.button_closeTK.grid(row=0, column=4, padx=0, pady=0)
+        self.button_logout.grid(row=0, column=5, padx=0, pady=0)
+        
+        self.menu_remove()
+        # login_frame
+        self.login_frame = tk.Frame(bg="#FFFFFF",width = 1280 ,height = 80  ,bd=5,relief=tk.GROOVE)#FLAT SUNKEN RAISED GROOVE RIDGE
+        self.login_frame.pack_propagate(0)
+        self.login_frame.grid(row = 0,column = 0)
+        
+        self.login_label_account = tk.Label(self.login_frame,text="帳號：",width=5,height=1,bg="#0000A0",fg="#00FFFF",font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
+        self.login_label_account_Text = tk.StringVar()#證券代碼
+        self.login_label_account_Text.set("")
+        self.login_label_account_entry = tk.Entry(self.login_frame,textvariable = self.login_label_account_Text,width=12,font=('微軟正黑體',16),relief=tk.GROOVE)
+        self.login_label_account_entry.bind('<Return>',self.LOGIN)#在該entry時按下enter鍵觸發self.catch_stock_update
+        
+        self.login_label_password = tk.Label(self.login_frame,text="密碼：",width=5,height=1,bg="#0000A0",fg="#00FFFF",font=('微軟正黑體',16,'bold'),relief=tk.GROOVE)
+        self.login_label_password_Text = tk.StringVar()#證券代碼
+        self.login_label_password_Text.set("")
+        self.login_label_password_entry = tk.Entry(self.login_frame,textvariable = self.login_label_password_Text,width=12,font=('微軟正黑體',16),relief=tk.GROOVE)
+        self.login_label_password_entry.bind('<Return>',self.LOGIN)#在該entry時按下enter鍵觸發self.catch_stock_update
+        
+        self.login_label_button=tk.Button(self.login_frame,text= "登入",command=lambda : self.LOGIN(),width=8, height=1,bg="#004040",fg="#FFFFFF",font=('微軟正黑體',12),relief=tk.GROOVE)
+        self.register_label_button=tk.Button(self.login_frame,text= "註冊",command=lambda : self.REGISTER(),width=8, height=1,bg="#004040",fg="#FFFFFF",font=('微軟正黑體',12),relief=tk.GROOVE)
+        
+        self.login_message = tk.StringVar()
+        self.login_message.set("請輸入帳號密碼登入或註冊。")
+        self.login_message_label = tk.Label(self.login_frame,textvariable = self.login_message,width=30,height=1,bd=5,bg="#FFFFFF",fg="#000000",anchor=tk.W,font=('微軟正黑體',12,'bold'))
+        
+        
+        # login_frame物件布局
+        self.login_label_account.grid(row=0, column=0, padx=0, pady=0)
+        self.login_label_account_entry.grid(row=0, column=1, padx=0, pady=0)
+        self.login_label_password.grid(row=1, column=0, padx=0, pady=0)
+        self.login_label_password_entry.grid(row=1, column=1, padx=0, pady=0)
+        self.login_label_button.grid(row=0, column=2, padx=0, pady=0)
+        self.register_label_button.grid(row=1, column=2, padx=0, pady=0)
+        self.login_message_label.grid(row=2, column=0, padx=0, pady=0,rowspan = 1,columnspan = 3)
+      
+    def REGISTER(self):
+        account_number = self.login_label_account_Text.get()
+        password_number = self.login_label_password_Text.get()
+        if(account_number == "" or password_number ==""):
+            self.login_message.set("帳號密碼不可為空。")
+            return
+        flag = True
+        for i in self.data:
+            if(i==account_number):
+                flag = False
+        if(flag):
+            account_data = {
+                    "password" : password_number,
+                    "簡單分數": 0,
+                    "中等分數": 0,
+                    "困難分數": 0,
+                    "bonus": 0,
+                    "Rank": 0,
+                }
+            
+            self.data[account_number] = account_data
+            self.updata_account()
+            self.login_message.set("帳號" + account_number + "註冊成功")
+            self.login_label_account_Text.set("")
+            self.login_label_password_Text.set("")
+        else:
+            self.login_message.set("帳號名稱已存在。")
+        return
     
+    def LOGIN(self):
+        account_number = self.login_label_account_Text.get()
+        password_number = self.login_label_password_Text.get()
+        if(account_number == "" or password_number ==""):
+            self.login_message.set("帳號密碼不可為空。")
+            return
+        flag = False
+        for i in self.data:
+            if(i==account_number and self.data[i]["password"] == password_number):
+                flag = True
+                self.account_name = account_number
+                self.login_label_account_Text.set("")
+                self.login_label_password_Text.set("")
+                break
+                #self.data[self.account_name]["password"] = 對"password"做修改
+                #self.data[self.account_name]["簡單分數"] = 對"簡單分數"做修改
+                #改完資料呼叫self.updata_account()即可儲存
+        if(flag):
+            self.login_message.set("登入成功。")
+            self.login_remove()
+            self.menu_grid()
+        else:
+            self.login_message.set("帳號不存在或密碼錯誤。")
+        return
+    def updata_account(self):
+        with open(os.path.join(datapath,"account.json"),"w") as f:
+            json.dump(self.data,f)
+        return
+    def LOGOUT(self):
+        self.login_message.set("請輸入帳號密碼登入或註冊。")
+        self.menu_remove()
+        self.login_grid()
+        return
+    
+    def menu_grid(self):
+        self.video1_title.grid()
+        self.video2_title.grid()
+        self.video1.grid()
+        self.video2.grid()
+        self.message_title_label.grid()
+        self.message_label.grid()
+        self.selection_model_label.grid()
+        self.selection_model.grid()
+        self.selection_item_label.grid()
+        self.selection_item.grid()
+        self.selection_cycle_label.grid()
+        self.selection_cycle.grid()
+        self.selection_several_label.grid()
+        self.selection_several.grid()
+        self.selection_intervals_label.grid()
+        self.selection_intervals.grid()
+        self.button_fitness_start.grid()
+        self.button_open.grid()
+        self.button_close.grid()
+        self.button_hand.grid()
+        self.button_pose.grid()
+        self.button_closeTK.grid()
+        self.button_logout.grid()
+        self.frame1.grid()
+        self.frame2.grid()
+        self.frame3.grid()
+        self.frame4.grid()
+        return
+    def menu_remove(self):
+        self.video1_title.grid_remove()
+        self.video2_title.grid_remove()
+        self.video1.grid_remove()
+        self.video2.grid_remove()
+        self.message_title_label.grid_remove()
+        self.message_label.grid_remove()
+        self.selection_model_label.grid_remove()
+        self.selection_model.grid_remove()
+        self.selection_item_label.grid_remove()
+        self.selection_item.grid_remove()
+        self.selection_cycle_label.grid_remove()
+        self.selection_cycle.grid_remove()
+        self.selection_several_label.grid_remove()
+        self.selection_several.grid_remove()
+        self.selection_intervals_label.grid_remove()
+        self.selection_intervals.grid_remove()
+        self.button_fitness_start.grid_remove()
+        self.button_open.grid_remove()
+        self.button_close.grid_remove()
+        self.button_hand.grid_remove()
+        self.button_pose.grid_remove()
+        self.button_closeTK.grid_remove()
+        self.button_logout.grid_remove()
+        self.frame1.grid_remove()
+        self.frame2.grid_remove()
+        self.frame3.grid_remove()
+        self.frame4.grid_remove()
+        return
+    
+    def login_grid(self):
+        self.login_frame.grid()
+        self.login_label_account.grid()
+        self.login_label_account_entry.grid()
+        self.login_label_password.grid()
+        self.login_label_password_entry.grid()
+        self.login_label_button.grid()
+        self.register_label_button.grid()
+        self.login_message_label.grid()
+        
+        return
+    def login_remove(self):
+        self.login_frame.grid_remove()
+        self.login_label_account.grid_remove()
+        self.login_label_account_entry.grid_remove()
+        self.login_label_password.grid_remove()
+        self.login_label_password_entry.grid_remove()
+        self.login_label_button.grid_remove()
+        self.register_label_button.grid_remove()
+        self.login_message_label.grid_remove()
+        
+        return
     def change_model(self, Event = None):
         model = self.selection_model.get()
         print(model)
@@ -920,7 +1119,7 @@ class MainApplication(tk.Tk):
         cv2.rectangle(self.img, (470, 0), (625, 50), (255,255,255), -1)
         cv2.putText(self.img, str(self.hand_control_show_status), (490, 30),
                 cv2.FONT_HERSHEY_SIMPLEX, 1, (0,0,0), 2, cv2.LINE_AA)
-
+        
     def Second_trigger(self):
         #測試是不是一秒執行一次用
         #self.message.set(str(self.count))
