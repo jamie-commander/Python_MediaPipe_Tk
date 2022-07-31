@@ -1,5 +1,6 @@
 import numpy as np
 import time
+import math
 
 # counter
 leftcounter = 0
@@ -13,6 +14,10 @@ stage = None
 plank_starttime = None
 plank_currenttime = None
 
+leftmark = 0
+rightmark = 0
+
+hold_time = 0
 
 def calc_angle(a, b, c):
     a = np.array(a) # First
@@ -36,6 +41,9 @@ def clear():
     global stage
     global plank_starttime
     global plank_currenttime
+    global leftmark
+    global rightmark
+    global hold_time
     leftcounter = 0
     rightcounter = 0
     leftstage = None
@@ -44,6 +52,9 @@ def clear():
     stage = None
     plank_starttime = None
     plank_currenttime = None
+    leftmark = 0
+    rightmark = 0
+    hold_time = 0
 
 # 二頭肌
 
@@ -52,7 +63,10 @@ def curl():
     global rightcounter
     global leftstage
     global rightstage
+    global leftmark
+    global rightmark
 
+    std = 20
     try: 
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
@@ -60,17 +74,40 @@ def curl():
         rightangle = calc_angle(rightshoulder, rightelbow, rightwrist)
 
         # counter logic
-        if leftangle > 160:
+        if leftangle > 120 and leftstage == 'up':
             leftstage = 'down'
-        if leftangle < 30 and leftstage == 'down':
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 50)
+            print('leftmark:', leftmark)
+            leftmark = 100000
+        elif leftangle > 120:
+            leftstage = 'down'
+            leftmark = 100000
+        elif leftangle < 70 and leftstage == 'down':
             leftstage = 'up'
             leftcounter += 1
+
+        if leftangle < 70:
+            if leftmark > leftangle:
+                leftmark = leftangle
         
-        if rightangle > 160:
+        if rightangle > 120 and rightstage == 'up':
             rightstage = 'down'
-        if rightangle < 30 and rightstage == 'down':
+            rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
+            rightmark = 100 - int(rightmark * 100 / 50)
+            print('rightmark:', rightmark)
+            rightmark = 100000
+        elif rightangle > 120:
+            rightstage = 'down'
+            rightmark = 100000
+        elif rightangle < 70 and rightstage == 'down':
             rightstage = 'up'
             rightcounter += 1
+
+        if rightangle < 70:
+            if rightmark > rightangle:
+                rightmark = rightangle
+        
         return (leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
@@ -81,6 +118,10 @@ def triceps_extension():
     global rightcounter
     global leftstage
     global rightstage
+    global leftmark
+    global rightmark
+
+    std = 180
 
     try:
         # left
@@ -89,17 +130,40 @@ def triceps_extension():
         rightangle = calc_angle(rightshoulder, rightelbow, rightwrist)
 
         # counter logic
-        if leftangle < 100:
+        if leftangle < 100 and leftstage == 'down':
             leftstage = 'up'
-        if leftangle > 160 and leftstage == 'up':
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 40)
+            print('leftmark:', leftmark)
+            leftmark = 0
+        elif leftangle < 100:
+            leftstage = 'up'
+            leftmark = 0
+        elif leftangle > 140 and leftstage == 'up':
             leftstage = 'down'
             leftcounter += 1
         
-        if rightangle < 100:
+        if leftangle > 140:
+            if leftmark < leftangle:
+                leftmark = leftangle
+        
+        if rightangle < 100 and rightstage == 'down':
             rightstage = 'up'
-        if rightangle > 160 and rightstage == 'up':
+            rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
+            rightmark = 100 - int(rightmark * 100 / 40)
+            print('rightmark:', rightmark)
+            rightmark = 0
+        elif rightangle < 100:
+            rightstage = 'up'
+            rightmark = 0
+        elif rightangle > 140 and rightstage == 'up':
             rightstage = 'down'
             rightcounter += 1
+        
+        if rightangle > 140:
+            if rightmark < rightangle:
+                rightmark = rightangle
+
         return (leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
@@ -111,6 +175,10 @@ def squat():
     global rightcounter
     global leftstage
     global rightstage
+    global leftmark
+    global rightmark
+
+    std = 120
 
     try:
         # left
@@ -119,17 +187,40 @@ def squat():
         rightangle = calc_angle(righthip, rightknee, rightankle)
         
         # counter logic
-        if leftangle > 170:
+        if leftangle > 170 and leftstage == 'down':
             leftstage = 'up'
-        if leftangle < 140 and leftstage == 'up':
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 75)
+            print('leftmark:', leftmark)
+            leftmark = 100000
+        elif leftangle > 170:
+            leftstage = 'up'
+            leftmark = 100000
+        elif leftangle < 150 and leftstage == 'up':
             leftstage = 'down'
             leftcounter += 1
+
+        if leftangle < 150:
+            if leftmark > leftangle:
+                leftmark = leftangle
         
-        if rightangle > 170:
+        if rightangle > 170 and rightstage == 'down':
             rightstage = 'up'
-        if rightangle < 140 and rightstage == 'up':
+            rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
+            rightmark = 100 - int(rightmark * 100 / 80)
+            print('rightmark:', rightmark)
+            rightmark = 100000
+        elif rightangle > 170:
+            rightstage = 'up'
+            rightmark = 100000
+        elif rightangle < 150 and rightstage == 'up':
             rightstage = 'down'
             rightcounter += 1
+
+        if rightangle < 150:
+            if rightmark > rightangle:
+                rightmark = rightangle
+
         return (leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
@@ -141,6 +232,10 @@ def tiptoe():
     global rightcounter
     global leftstage
     global rightstage
+    global leftmark
+    global rightmark
+
+    std = 135
 
     try:
         # left
@@ -149,17 +244,40 @@ def tiptoe():
         rightangle = calc_angle(rightknee, rightankle, right_foot_index)
 
         # counter logic
-        if leftangle < 120:
+        if leftangle < 120 and leftstage == 'up':
             leftstage = 'down'
-        if leftangle > 135 and leftstage == 'down':
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 10)
+            print('leftmark:', leftmark)
+            leftmark = 0
+        elif leftangle < 120:
+            leftstage = 'down'
+            leftmark = 0
+        elif leftangle > 130 and leftstage == 'down':
             leftstage = 'up'
             leftcounter += 1
-        
-        if rightangle < 120:
+
+        if leftangle > 130:
+            if leftmark < leftangle:
+                leftmark = leftangle
+
+        if rightangle < 120 and rightstage == 'up':
             rightstage = 'down'
-        if rightangle > 135 and rightstage == 'down':
+            rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
+            rightmark = 100 - int(rightmark * 100 / 10)
+            print('rightmark:', rightmark)
+            rightmark = 0
+        elif rightangle < 120:
+            rightstage = 'down'
+            rightmark = 0
+        elif rightangle > 130 and rightstage == 'down':
             rightstage = 'up'
             rightcounter += 1
+
+        if rightangle > 130:
+            if rightmark < rightangle:
+                rightmark = rightangle
+
         return (leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
@@ -171,7 +289,10 @@ def Dumbbell_Lateral_Raise():
     global rightcounter
     global leftstage
     global rightstage
+    global leftmark
+    global rightmark
 
+    std = 80
     try:
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
@@ -179,17 +300,37 @@ def Dumbbell_Lateral_Raise():
         rightangle = calc_angle(rightshoulder, rightelbow, rightwrist)
 
         # counter logic
+        if leftangle > 140 and leftstage == None:
+            leftmark = 100000
         if leftangle < 95:
             leftstage = 'down'
-        if leftangle > 140 and leftstage == 'down':
+        elif leftangle > 140 and leftstage == 'down':
             leftstage = 'up'
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 80)
+            print('leftmark:', leftmark)
+            leftmark = 100000
             leftcounter += 1
-        
+
+        if leftangle < 95:
+            if leftmark > leftangle:
+                leftmark = leftangle
+
+        if rightangle > 140 and rightstage == None:
+            rightmark = 100000
         if rightangle < 95:
             rightstage = 'down'
-        if rightangle > 140 and rightstage == 'down':
+        elif rightangle > 140 and rightstage == 'down':
             rightstage = 'up'
+            rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
+            rightmark = 100 - int(rightmark * 100 / 80)
+            print('rightmark:', rightmark)
+            rightmark = 100000
             rightcounter += 1
+
+        if rightangle < 95:
+            if rightmark > rightangle:
+                rightmark = rightangle
 
         return (leftcounter, rightcounter, leftstage, rightstage)
     except:
@@ -200,7 +341,12 @@ def Dumbbell_Shoulder_Press():
     global rightcounter
     global leftstage
     global rightstage
+    global leftmark
+    global rightmark
+    
 
+    std = 90
+    
     try:
         # left
         leftangle = calc_angle(lefthip, leftshoulder, leftelbow)
@@ -208,17 +354,40 @@ def Dumbbell_Shoulder_Press():
         rightangle = calc_angle(righthip, rightshoulder, rightelbow)
         
         # counter logic
-        if leftangle < 20:
+        if leftangle < 20 and leftstage == 'up':
             leftstage = 'down'
-        if leftangle > 75 and leftstage == 'down':
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 40)
+            print('leftmark:', leftmark)
+            leftmark = 0
+        elif leftangle < 20:
+            leftstage = 'down'
+            leftmark = 0
+        elif leftangle > 50 and leftstage == 'down':
             leftstage = 'up'
             leftcounter += 1
         
-        if rightangle < 20:
+        if leftangle > 50 :
+            if leftmark < leftangle:
+                leftmark = leftangle
+
+        if rightangle < 20 and rightstage == 'up':
             rightstage = 'down'
-        if rightangle > 75 and rightstage == 'down':
+            rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
+            rightmark = 100 - int(rightmark * 100 / 40)
+            print('rightmark:', rightmark)
+            rightmark = 0
+        elif rightangle < 20:
+            rightstage = 'down'
+            rightmark = 0
+        elif rightangle > 50 and rightstage == 'down':
             rightstage = 'up'
             rightcounter += 1
+        
+        if rightangle > 50 :
+            if rightmark < rightangle:
+                rightmark = rightangle
+
 
         return (leftcounter, rightcounter, leftstage, rightstage)
     except:
@@ -231,6 +400,10 @@ def one_arm_row():
     global rightcounter
     global leftstage
     global rightstage
+    global leftmark
+    global rightmark
+    
+    std = 55
 
     try:
         # left
@@ -241,17 +414,39 @@ def one_arm_row():
         right_move_angle = calc_angle(righthip, rightshoulder, rightelbow)
         
         # counter logic
-        if leftangle > 160 and left_move_angle <= 30:
+        if leftangle > 160 and left_move_angle <= 45 and leftstage == 'up':
             leftstage = 'down'
-        if leftangle < 100 and left_move_angle >= 45 and leftstage == 'down':
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 20)
+            print('leftmark:', leftmark)
+            leftmark = 0
+        elif leftangle > 160 and left_move_angle <= 45:
+            leftstage = 'down'
+            leftmark = 0
+        elif leftangle < 120 and left_move_angle >= 35 and leftstage == 'down':
             leftstage = 'up'
             leftcounter += 1
-        
-        if rightangle > 160 and right_move_angle <= 30:
+
+        if leftangle < 120 and left_move_angle >= 35:
+            if leftmark < left_move_angle:
+                leftmark = left_move_angle
+
+        if rightangle > 160 and right_move_angle <= 45 and rightstage == 'up':
             rightstage = 'down'
-        if rightangle < 100 and right_move_angle >= 45 and rightstage == 'down':
+            rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
+            rightmark = 100 - int(rightmark * 100 / 20)
+            print('rightmark:', rightmark)
+            rightmark = 0
+        elif rightangle > 160 and right_move_angle <= 45:
+            rightstage = 'down'
+            rightmark = 0
+        elif rightangle < 120 and right_move_angle >= 35 and rightstage == 'down':
             rightstage = 'up'
             rightcounter += 1
+
+        if rightangle < 120 and right_move_angle >= 35:
+            if rightmark < right_move_angle:
+                rightmark = right_move_angle
 
         return (leftcounter, rightcounter, leftstage, rightstage)
     except:
@@ -263,25 +458,37 @@ def plank():
     global plank_starttime
     global plank_currenttime
     global stage
+    global hold_time
+    
+    std = 170
     try:
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
         # right
         rightangle = calc_angle(rightshoulder, rightelbow, rightwrist)
+        
+        angle = calc_angle(leftshoulder, lefthip, leftankle)
 
         # counter logic
-        if 70 <= leftangle <= 95 and 70 <= rightangle <= 95 and stage == 'up':
+        if stage == None:
             stage = 'down'
-            plank_starttime = time.time()
-            plank_currenttime = time.time()
-        elif 70 <= leftangle <= 95 and 70 <= rightangle <= 95 and stage == 'down':
-            plank_currenttime = time.time()
-        else:
+            hold_time = 0
+        elif 70 <= leftangle <= 120 and 70 <= rightangle <= 120 and angle >= 150 and stage == 'down':
             stage = 'up'
             plank_starttime = time.time()
-            plank_currenttime = time.time()
-
-        hold_time = int(plank_currenttime - plank_starttime)
+        elif 70 <= leftangle <= 120 and 70 <= rightangle <= 120 and angle >= 150:
+            pass
+        else:
+            stage = 'down'
+            plank_starttime = time.time()
+        
+        if time.time() - plank_starttime >= 1:
+            plank_starttime = time.time()
+            leftmark = angle
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 40)
+            print('leftmark:', leftmark)
+            hold_time += 1 
 
         return (hold_time, hold_time, stage, stage)
     except:
@@ -290,6 +497,7 @@ def plank():
 def starjump():
     global counter
     global stage
+    global leftmark
     try:
         # left hand
         left_hand_angle = calc_angle(leftwrist, leftshoulder, lefthip)
@@ -300,12 +508,25 @@ def starjump():
         right_leg_angle = calc_angle(leftknee, righthip, rightknee)
         leg_angle = int((left_leg_angle + right_leg_angle) / 2)
         
+        std = 170
+
         # counter logic
-        if left_hand_angle < 80 and right_hand_angle < 80 and leg_angle < 30:
+        if left_hand_angle < 80 and right_hand_angle < 80 and leg_angle < 30 and stage == 'up':
             stage = 'down'
-        if left_hand_angle > 160 and right_hand_angle > 160 and leg_angle >= 30 and stage == 'down':
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 20)
+            print('leftmark:', leftmark)
+            leftmark = 0
+        elif left_hand_angle < 80 and right_hand_angle < 80 and leg_angle < 30:
+            stage = 'down'
+            leftmark = 0
+        elif left_hand_angle > 150 and right_hand_angle > 150 and leg_angle >= 30 and stage == 'down':
             stage = 'up'
             counter += 1
+        
+        if left_hand_angle > 150 and right_hand_angle > 150 and leg_angle >= 30:
+            if leftmark < left_hand_angle and leftmark < right_hand_angle:
+                leftmark = (left_hand_angle + right_hand_angle) // 2
 
         return (counter, counter, stage, stage)
     except:
@@ -315,18 +536,34 @@ def starjump():
 def pushup():
     global counter
     global stage
+    global leftmark
+
+    std = 65
     try:
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
         # right
         rightangle = calc_angle(rightshoulder, rightelbow, rightwrist)
 
+        angle = calc_angle(leftshoulder, lefthip, leftankle)
+
         # counter logic
-        if 50 <= leftangle <= 70 and 50 <= rightangle <= 70:
+        if 50 <= leftangle <= 100 and 50 <= rightangle <= 100 and angle >= 150:
             stage = 'down'
-        elif leftangle > 160 and rightangle > 160 and stage == 'down':
+        elif leftangle > 150 and rightangle > 150 and stage == None:
             stage = 'up'
+            leftmark = 100000
+        elif leftangle > 150 and rightangle > 150 and stage == 'down':
+            stage = 'up'
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 35)
+            print('leftmark:', leftmark)
+            leftmark = 100000
             counter += 1
+        
+        if 50 <= leftangle <= 100 and 50 <= rightangle <= 100 and angle >= 150:
+            if leftmark > leftangle:
+                leftmark = leftangle
 
         return (counter, counter, stage, stage)
     except:
@@ -336,6 +573,9 @@ def pushup():
 def reverse_crunch():
     global counter
     global stage
+    global leftmark
+
+    std = 60
     try:
         # left
         leftangle = calc_angle(leftshoulder, lefthip, leftknee)
@@ -343,12 +583,24 @@ def reverse_crunch():
         rightangle = calc_angle(rightshoulder, righthip, rightknee)
 
         # curl counter logic
-        if leftangle > 80 and rightangle > 80:
+        if leftangle > 100 and rightangle > 100 and stage == None:
             stage = 'up'
-        if leftangle < 60 and rightangle < 60 and stage == 'up':
+            leftmark = 100000
+        elif leftangle > 100 and rightangle > 100 and stage == 'down':
+            stage = 'up'
+            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
+            leftmark = 100 - int(leftmark * 100 / 20)
+            print('leftmark:', leftmark)
+            leftmark = 100000
+        elif leftangle < 80 and rightangle < 80 and stage == 'up':
             stage = 'down'
             counter += 1
-        return (counter, counter, stage, stage)
+        
+        if leftangle < 80 and rightangle < 80:
+            if leftmark > leftangle:
+                leftmark = leftangle
+
+        return (leftangle, counter, counter, stage, stage)
     except:
         return None
 
