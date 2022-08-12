@@ -16,6 +16,7 @@ plank_currenttime = None
 
 leftmark = 0
 rightmark = 0
+mark = 0
 
 hold_time = 0
 
@@ -44,6 +45,7 @@ def clear():
     global leftmark
     global rightmark
     global hold_time
+    global mark
     leftcounter = 0
     rightcounter = 0
     leftstage = None
@@ -55,6 +57,7 @@ def clear():
     leftmark = 0
     rightmark = 0
     hold_time = 0
+    mark = 0
 
 # 二頭肌
 
@@ -65,8 +68,12 @@ def curl():
     global rightstage
     global leftmark
     global rightmark
+    global mark
 
     std = 20
+    leftstatus = [False, 0]
+    rightstatus = [False, 0]
+    status = False
     try: 
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
@@ -78,6 +85,7 @@ def curl():
             leftstage = 'down'
             leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
             leftmark = 100 - int(leftmark * 100 / 50)
+            leftstatus = [True, leftmark]
             print('leftmark:', leftmark)
             leftmark = 100000
         elif leftangle > 120:
@@ -95,6 +103,7 @@ def curl():
             rightstage = 'down'
             rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
             rightmark = 100 - int(rightmark * 100 / 50)
+            rightstatus = [True, rightmark]
             print('rightmark:', rightmark)
             rightmark = 100000
         elif rightangle > 120:
@@ -108,7 +117,14 @@ def curl():
             if rightmark > rightangle:
                 rightmark = rightangle
         
-        return (leftcounter, rightcounter, leftstage, rightstage)
+        if leftstatus[0]:
+            mark = leftstatus[1]
+        elif rightstatus[0]:
+            mark = rightstatus[1]
+
+        status = leftstatus[0] or rightstatus[0]
+        
+        return (status, mark, leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
 # 三頭肌
@@ -120,9 +136,12 @@ def triceps_extension():
     global rightstage
     global leftmark
     global rightmark
+    global mark
 
     std = 180
-
+    leftstatus = [False, 0]
+    rightstatus = [False, 0]
+    status = False
     try:
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
@@ -134,6 +153,7 @@ def triceps_extension():
             leftstage = 'up'
             leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
             leftmark = 100 - int(leftmark * 100 / 40)
+            leftstatus = [True, leftmark]
             print('leftmark:', leftmark)
             leftmark = 0
         elif leftangle < 100:
@@ -151,6 +171,7 @@ def triceps_extension():
             rightstage = 'up'
             rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
             rightmark = 100 - int(rightmark * 100 / 40)
+            rightstatus = [True, rightmark]
             print('rightmark:', rightmark)
             rightmark = 0
         elif rightangle < 100:
@@ -164,7 +185,14 @@ def triceps_extension():
             if rightmark < rightangle:
                 rightmark = rightangle
 
-        return (leftcounter, rightcounter, leftstage, rightstage)
+        if leftstatus[0]:
+            mark = leftstatus[1]
+        elif rightstatus[0]:
+            mark = rightstatus[1]
+
+        status = leftstatus[0] or rightstatus[0]
+
+        return (status, mark, leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
 
@@ -177,8 +205,12 @@ def squat():
     global rightstage
     global leftmark
     global rightmark
+    global mark
 
     std = 120
+    leftstatus = [False, 0]
+    rightstatus = [False, 0]
+    status = False
 
     try:
         # left
@@ -191,6 +223,7 @@ def squat():
             leftstage = 'up'
             leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
             leftmark = 100 - int(leftmark * 100 / 75)
+            leftstatus = [True, leftmark]
             print('leftmark:', leftmark)
             leftmark = 100000
         elif leftangle > 170:
@@ -208,6 +241,7 @@ def squat():
             rightstage = 'up'
             rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
             rightmark = 100 - int(rightmark * 100 / 80)
+            rightstatus = [True, rightmark]
             print('rightmark:', rightmark)
             rightmark = 100000
         elif rightangle > 170:
@@ -220,8 +254,15 @@ def squat():
         if rightangle < 150:
             if rightmark > rightangle:
                 rightmark = rightangle
+        
+        if leftstatus[0]:
+            mark = leftstatus[1]
+        elif rightstatus[0]:
+            mark = rightstatus[1]
 
-        return (leftcounter, rightcounter, leftstage, rightstage)
+        status = leftstatus[0] or rightstatus[0]
+
+        return (status, mark, leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
 
@@ -234,8 +275,13 @@ def tiptoe():
     global rightstage
     global leftmark
     global rightmark
+    global mark
 
     std = 135
+    leftstatus = [False, 0]
+    rightstatus = [False, 0]
+    status = False
+
 
     try:
         # left
@@ -248,7 +294,8 @@ def tiptoe():
             leftstage = 'down'
             leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
             leftmark = 100 - int(leftmark * 100 / 10)
-            print('leftmark:', leftmark)
+            leftstatus = [True, leftmark]
+            print('leftmark:', leftmark)            
             leftmark = 0
         elif leftangle < 120:
             leftstage = 'down'
@@ -265,6 +312,7 @@ def tiptoe():
             rightstage = 'down'
             rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
             rightmark = 100 - int(rightmark * 100 / 10)
+            rightstatus = [True, rightmark]
             print('rightmark:', rightmark)
             rightmark = 0
         elif rightangle < 120:
@@ -278,7 +326,14 @@ def tiptoe():
             if rightmark < rightangle:
                 rightmark = rightangle
 
-        return (leftcounter, rightcounter, leftstage, rightstage)
+        if leftstatus[0]:
+            mark = leftstatus[1]
+        elif rightstatus[0]:
+            mark = rightstatus[1]
+
+        status = leftstatus[0] or rightstatus[0]
+
+        return (status, mark, leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
 
@@ -291,8 +346,13 @@ def Dumbbell_Lateral_Raise():
     global rightstage
     global leftmark
     global rightmark
+    global mark
 
     std = 80
+    leftstatus = [False, 0]
+    rightstatus = [False, 0]
+    status = False
+
     try:
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
@@ -308,6 +368,7 @@ def Dumbbell_Lateral_Raise():
             leftstage = 'up'
             leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
             leftmark = 100 - int(leftmark * 100 / 80)
+            leftstatus = [True, leftmark]
             print('leftmark:', leftmark)
             leftmark = 100000
             leftcounter += 1
@@ -324,6 +385,7 @@ def Dumbbell_Lateral_Raise():
             rightstage = 'up'
             rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
             rightmark = 100 - int(rightmark * 100 / 80)
+            rightstatus = [True, rightmark]
             print('rightmark:', rightmark)
             rightmark = 100000
             rightcounter += 1
@@ -331,8 +393,15 @@ def Dumbbell_Lateral_Raise():
         if rightangle < 95:
             if rightmark > rightangle:
                 rightmark = rightangle
+        
+        if leftstatus[0]:
+            mark = leftstatus[1]
+        elif rightstatus[0]:
+            mark = rightstatus[1]
 
-        return (leftcounter, rightcounter, leftstage, rightstage)
+        status = leftstatus[0] or rightstatus[0]
+
+        return (status, mark, leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
 
@@ -343,9 +412,12 @@ def Dumbbell_Shoulder_Press():
     global rightstage
     global leftmark
     global rightmark
-    
+    global mark
 
     std = 90
+    leftstatus = [False, 0]
+    rightstatus = [False, 0]
+    status = False
     
     try:
         # left
@@ -358,6 +430,7 @@ def Dumbbell_Shoulder_Press():
             leftstage = 'down'
             leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
             leftmark = 100 - int(leftmark * 100 / 40)
+            leftstatus = [True, leftmark]
             print('leftmark:', leftmark)
             leftmark = 0
         elif leftangle < 20:
@@ -375,6 +448,7 @@ def Dumbbell_Shoulder_Press():
             rightstage = 'down'
             rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
             rightmark = 100 - int(rightmark * 100 / 40)
+            rightstatus = [True, rightmark]
             print('rightmark:', rightmark)
             rightmark = 0
         elif rightangle < 20:
@@ -387,9 +461,15 @@ def Dumbbell_Shoulder_Press():
         if rightangle > 50 :
             if rightmark < rightangle:
                 rightmark = rightangle
+        
+        if leftstatus[0]:
+            mark = leftstatus[1]
+        elif rightstatus[0]:
+            mark = rightstatus[1]
 
+        status = leftstatus[0] or rightstatus[0]
 
-        return (leftcounter, rightcounter, leftstage, rightstage)
+        return (status, mark, leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
 
@@ -402,8 +482,12 @@ def one_arm_row():
     global rightstage
     global leftmark
     global rightmark
+    global mark
     
     std = 55
+    leftstatus = [False, 0]
+    rightstatus = [False, 0]
+    status = False
 
     try:
         # left
@@ -418,6 +502,7 @@ def one_arm_row():
             leftstage = 'down'
             leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
             leftmark = 100 - int(leftmark * 100 / 20)
+            leftstatus = [True, leftmark]
             print('leftmark:', leftmark)
             leftmark = 0
         elif leftangle > 160 and left_move_angle <= 45:
@@ -435,6 +520,7 @@ def one_arm_row():
             rightstage = 'down'
             rightmark = math.sqrt((rightmark - std) * (rightmark - std)) 
             rightmark = 100 - int(rightmark * 100 / 20)
+            rightstatus = [True, rightmark]
             print('rightmark:', rightmark)
             rightmark = 0
         elif rightangle > 160 and right_move_angle <= 45:
@@ -448,7 +534,14 @@ def one_arm_row():
             if rightmark < right_move_angle:
                 rightmark = right_move_angle
 
-        return (leftcounter, rightcounter, leftstage, rightstage)
+        if leftstatus[0]:
+            mark = leftstatus[1]
+        elif rightstatus[0]:
+            mark = rightstatus[1]
+
+        status = leftstatus[0] or rightstatus[0]
+
+        return (status, mark, leftcounter, rightcounter, leftstage, rightstage)
     except:
         return None
 
@@ -459,8 +552,10 @@ def plank():
     global plank_currenttime
     global stage
     global hold_time
-    
+    global mark
+
     std = 170
+    status = False
     try:
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
@@ -484,13 +579,14 @@ def plank():
         
         if time.time() - plank_starttime >= 1:
             plank_starttime = time.time()
-            leftmark = angle
-            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
-            leftmark = 100 - int(leftmark * 100 / 40)
-            print('leftmark:', leftmark)
+            mark = angle
+            mark = math.sqrt((mark - std) * (mark - std)) 
+            mark = 100 - int(mark * 100 / 40)
+            status = True
+            print('mark:', mark)
             hold_time += 1 
 
-        return (hold_time, hold_time, stage, stage)
+        return (status, mark, hold_time, hold_time, stage, stage)
     except:
         return None
 
@@ -498,6 +594,10 @@ def starjump():
     global counter
     global stage
     global leftmark
+    global mark
+
+    std = 170
+    status = False
     try:
         # left hand
         left_hand_angle = calc_angle(leftwrist, leftshoulder, lefthip)
@@ -508,18 +608,18 @@ def starjump():
         right_leg_angle = calc_angle(leftknee, righthip, rightknee)
         leg_angle = int((left_leg_angle + right_leg_angle) / 2)
         
-        std = 170
 
         # counter logic
         if left_hand_angle < 80 and right_hand_angle < 80 and leg_angle < 30 and stage == 'up':
             stage = 'down'
-            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
-            leftmark = 100 - int(leftmark * 100 / 20)
-            print('leftmark:', leftmark)
-            leftmark = 0
+            mark = math.sqrt((mark - std) * (mark - std)) 
+            mark = 100 - int(mark * 100 / 20)
+            status = True
+            print('mark:', mark)
+            mark = 0
         elif left_hand_angle < 80 and right_hand_angle < 80 and leg_angle < 30:
             stage = 'down'
-            leftmark = 0
+            mark = 0
         elif left_hand_angle > 150 and right_hand_angle > 150 and leg_angle >= 30 and stage == 'down':
             stage = 'up'
             counter += 1
@@ -528,7 +628,7 @@ def starjump():
             if leftmark < left_hand_angle and leftmark < right_hand_angle:
                 leftmark = (left_hand_angle + right_hand_angle) // 2
 
-        return (counter, counter, stage, stage)
+        return (status, mark, counter, counter, stage, stage)
     except:
         return None
 
@@ -536,9 +636,11 @@ def starjump():
 def pushup():
     global counter
     global stage
-    global leftmark
+    global mark
 
     std = 65
+    status = False
+
     try:
         # left
         leftangle = calc_angle(leftshoulder, leftelbow, leftwrist)
@@ -552,20 +654,21 @@ def pushup():
             stage = 'down'
         elif leftangle > 150 and rightangle > 150 and stage == None:
             stage = 'up'
-            leftmark = 100000
+            mark = 100000
         elif leftangle > 150 and rightangle > 150 and stage == 'down':
             stage = 'up'
-            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
-            leftmark = 100 - int(leftmark * 100 / 35)
-            print('leftmark:', leftmark)
-            leftmark = 100000
+            mark = math.sqrt((mark - std) * (mark - std)) 
+            mark = 100 - int(mark * 100 / 35)
+            status = True
+            print('mark:', mark)
+            mark = 100000
             counter += 1
         
         if 50 <= leftangle <= 100 and 50 <= rightangle <= 100 and angle >= 150:
-            if leftmark > leftangle:
-                leftmark = leftangle
+            if mark > leftangle:
+                mark = leftangle
 
-        return (counter, counter, stage, stage)
+        return (status, mark, counter, counter, stage, stage)
     except:
         return None
 
@@ -573,9 +676,10 @@ def pushup():
 def reverse_crunch():
     global counter
     global stage
-    global leftmark
+    global mark
 
     std = 60
+    status = False
     try:
         # left
         leftangle = calc_angle(leftshoulder, lefthip, leftknee)
@@ -585,22 +689,23 @@ def reverse_crunch():
         # curl counter logic
         if leftangle > 100 and rightangle > 100 and stage == None:
             stage = 'up'
-            leftmark = 100000
+            mark = 100000
         elif leftangle > 100 and rightangle > 100 and stage == 'down':
             stage = 'up'
-            leftmark = math.sqrt((leftmark - std) * (leftmark - std)) 
-            leftmark = 100 - int(leftmark * 100 / 20)
-            print('leftmark:', leftmark)
-            leftmark = 100000
+            mark = math.sqrt((mark - std) * (mark - std)) 
+            mark = 100 - int(mark * 100 / 20)
+            status = True
+            print('mark:', mark)
+            mark = 100000
         elif leftangle < 80 and rightangle < 80 and stage == 'up':
             stage = 'down'
             counter += 1
         
         if leftangle < 80 and rightangle < 80:
-            if leftmark > leftangle:
-                leftmark = leftangle
+            if mark > leftangle:
+                mark = leftangle
 
-        return (leftangle, counter, counter, stage, stage)
+        return (status, mark, leftangle, counter, counter, stage, stage)
     except:
         return None
 
